@@ -11,19 +11,22 @@ The analysis folder contains the python codes used to analyse SET outputs genera
 The SET model builds an image tessellation that reconstruct a possible cell organization following a cell shape distribution extracted from a tissue segmentation.
 Depending of the arguments, the model will : reconstruct the observed tissue or realize a random SET of the tissue with elliptic shaped cells, constrained the cell shape to be ellipses or to have a higher range of shape possibilities, ... 
 
-##configuration : 
+## Configuration : 
 run with python 2.7
 use PIL package
 
-##quick start : 
+## Quick start : 
 A basic example on P30 mice ependymal tissue
-*1) download the following folder 
-*2) open a console in the downloaded folder. 
+* 1) download the following folder 
+* 2) open a console in the downloaded folder. 
 	* to reconstruct the ependymal tissue (reconstruction by SET): 
+
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/reconstruction 
 ```
+
 	* to generate 1000 randomly shuffled ependymal tissue (random SET) :
+
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/allSimuOutput -s 1000
 ```
@@ -32,20 +35,20 @@ Note that the random SET are generated one after the others and it can take long
 
 ## Arguments details : 
 
-*-l : label image path of the studied tissue (tif, png or ...)
-*-s : option to shuffle randomly cell positions. Must be followed by the number of random SET to generate. 
-*-o : name folder output (path)
-*-p : number of parameters used to construct the shape distance function. Default is 5 (ellipses). Can be 5 (mahalanobis distance function), 6 (asymmetric elliptic shape), 7 (Minkowski metrics), 8 (all parameters).
-*-i : input raw image (RGB or not), when present : morphing of the intracellular contents is activate. (.tif, png or ...)
-*-n : number of jobs for parallel processing
-*-d : path movie directory name. Option to generate each Lloyd iteration image.
-*-sp : subpopulation shuffling option. Must precise 
+* -l : label image path of the studied tissue (tif, png or ...)
+* -s : option to shuffle randomly cell positions. Must be followed by the number of random SET to generate. 
+* -o : name folder output (path)
+* -p : number of parameters used to construct the shape distance function. Default is 5 (ellipses). Can be 5 (mahalanobis distance function), 6 (asymmetric elliptic shape), 7 (Minkowski metrics), 8 (all parameters).
+* -i : input raw image (RGB or not), when present : morphing of the intracellular contents is activate. (.tif, png or ...)
+* -n : number of jobs for parallel processing
+* -d : path movie directory name. Option to generate each Lloyd iteration image.
+* -sp : subpopulation shuffling option. Must precise 
 	* 1) the name (path) of the file containing cell classification (.npy) 
 	* 2) then the class names that you want to shuffle (can be more than 1)
-*-wp : option to morph only a position of an intracellular component. Need the path of the file containing the position per label (.npy)
-*-r : redo a simulation. Need the path of the csv generate during the first simulation (.csv)
+* -wp : option to morph only a position of an intracellular component. Need the path of the file containing the position per label (.npy)
+* -r : redo a simulation. Need the path of the csv generate during the first simulation (.csv)
 
-output : 
+## Output : 
 .tiff image file containing the last tessellation, labeled correspondingly to the labeled image input.
 .csv containing parameters per cells extracted from the segmentation, then the final values of the parameters
 
