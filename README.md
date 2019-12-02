@@ -1,10 +1,10 @@
 # cellmodelling 
 
-The SET folder contains the python codes of the SET (Synthesis of Epithelial Tissue) model developed in the Biocomp group of IBENS institute.
+The *SET* folder contains the python codes of the SET (Synthesis of Epithelial Tissue) model developed in the Biocomp group of IBENS institute.
 
-The dataExamples folder contains some data that are necessary to apply the provided examples of using the SET model.
+The *dataExamples* folder contains some data that are necessary to apply the provided examples of using the SET model.
 
-The analysis folder contains the python codes used to analyse SET outputs generated for each application present in the related paper.
+The *analysis* folder contains the python codes used to analyse SET outputs generated for each application present in the related paper.
 
 # SET 
 
