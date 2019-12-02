@@ -13,19 +13,21 @@ Depending of the arguments, the model will : reconstruct the observed tissue or 
 
 ## Configuration : 
 run with python 2.7
+
 use PIL package
 
 ## Quick start : 
 A basic example on P30 mice ependymal tissue
 * 1) download the following folder 
 * 2) open a console in the downloaded folder. 
-	* to reconstruct the ependymal tissue (reconstruction by SET): 
+ * to reconstruct the ependymal tissue (reconstruction by SET): 
 
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/reconstruction 
 ```
 
-	* to generate 1000 randomly shuffled ependymal tissue (random SET) :
+ * to generate 1000 randomly shuffled ependymal tissue (random SET) :
+
 
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/allSimuOutput -s 1000
@@ -50,6 +52,7 @@ Note that the random SET are generated one after the others and it can take long
 
 ## Output : 
 .tiff image file containing the last tessellation, labeled correspondingly to the labeled image input.
+
 .csv containing parameters per cells extracted from the segmentation, then the final values of the parameters
 
 ## Other examples : 
