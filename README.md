@@ -45,8 +45,8 @@ Note that the random SET are generated one after the others and it can take long
 * -n : number of jobs for parallel processing
 * -d : path movie directory name. Option to generate each Lloyd iteration image.
 * -sp : subpopulation shuffling option. Must precise 
-	* 1) the name (path) of the file containing cell classification (.npy) 
-	* 2) then the class names that you want to shuffle (can be more than 1)
+	 1) the name (path) of the file containing cell classification (.npy) 
+	 2) then the class names that you want to shuffle (can be more than 1)
 * -wp : option to morph only a position of an intracellular component. Need the path of the file containing the position per label (.npy)
 * -r : redo a simulation. Need the path of the csv generate during the first simulation (.csv)
 
