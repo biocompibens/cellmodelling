@@ -18,15 +18,15 @@ use PIL package
 
 ## Quick start : 
 A basic example on P30 mice ependymal tissue
-* 1) download the following folder 
-* 2) open a console in the downloaded folder. 
- * to reconstruct the ependymal tissue (reconstruction by SET): 
+ 1) download the following folder 
+ 2) open a console in the downloaded folder. 
+  * to reconstruct the ependymal tissue (reconstruction by SET): 
 
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/reconstruction 
 ```
 
- * to generate 1000 randomly shuffled ependymal tissue (random SET) :
+  * to generate 1000 randomly shuffled ependymal tissue (random SET) :
 
 
 ```
