@@ -17,7 +17,7 @@ Depending of the arguments, the model will : reconstruct the observed tissue or 
 ## Configuration : 
 run with python 2.7
 
-use PIL package
+use PIL, networkx, multiprocessing,tqdm,panda, cv2, packages
 
 ## Quick start : 
 A basic example on P30 mice ependymal tissue
@@ -39,14 +39,14 @@ python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmenta
 Note that the random SET are generated one after the others and it can take long time. To accelerate the calcul, 
 1) use the -n option and specify a number of CPU to use multiprocessing 
 2) use a cluster to realize in parallele several unit shuffle simulation  (-s 1 instead of -s 1000) 
-3) anticipate the use of a mean measurement to analyse your observation of interest : the distribution a mean value can be approximate with only one occurence of the distribution with a gaussian <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/>, n the number of measure in the distribution.
+3) anticipate the use of a mean measurement to analyse your observation of interest : the distribution a mean value can be approximate with only one occurence of the distribution with a gaussian <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/>, n the number of measures in the distribution.
 
 ## Arguments details : 
 
 * -l : label image path of the studied tissue (tif, png or ...)
 * -s : option to shuffle randomly cell positions. Must be followed by the number of random SET to generate. 
 * -o : name folder output (path)
-* -p : number of parameters used to construct the shape distance function. Default is 5 (ellipses). Can be 5 (mahalanobis distance function), 6 (asymmetric elliptic shape), 7 (Minkowski metrics), 8 (all parameters).
+* -p : number of parameters used to construct the shape distance function. Default is 5 (ellipses). Can be 5 (mahalanobis distance function), 6 (Minkowski metrics), 7 (asymmetric elliptic shape), 8 (all parameters).
 * -i : input raw image (RGB or not), when present : morphing of the intracellular contents is activate. (.tif, png or ...)
 * -n : number of jobs for parallel processing
 * -d : path movie directory name. Option to generate each Lloyd iteration image.
@@ -61,19 +61,23 @@ Note that the random SET are generated one after the others and it can take long
 
 .csv containing parameters per cells extracted from the segmentation, then the final values of the parameters
 
--wp generate a .txt containing the new position of the intracellular marker per cell
+-wp option generates a .txt containing the new position of the intracellular marker per cell
 
--i generate a .tiff containing the intracellular morphing image
+-i option generates a .png containing the intracellular morphing image
 
--d generate 2 .tiff 
-1) the labels 
-2) the corresponding shapes draw over border image
+-d option generates 2 .png files : 
+	1) the labels 
+	2) the corresponding shapes draw over border image
 
 
 
 ## Other examples : 
 
+* Analysis of intercellular components relation : the centriole orientation of a E18 ependymal tissue
 
+```
+python ./SET/model.py  -l ./dataExamples/ependymaE18/E18\_24\_series51channel2WFGM22LABEL.tif -o ./dataExamples/ependymaE18 -p 5 -wp ./dataExamples/ependymaE18/centrioleDetection_s51.npy
+```
 
 ## Reference: 
 
