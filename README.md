@@ -1,10 +1,12 @@
-# cellmodelling 
+-------
 
 The *SET* folder contains the python codes of the SET (Synthesis of Epithelial Tissue) model developed in the Biocomp group of IBENS institute.
 
 The *dataExamples* folder contains some data that are necessary to apply the provided examples of using the SET model.
 
 The *analysis* folder contains the python codes used to analyse SET outputs generated for each application present in the related paper.
+
+------
 
 # SET 
 
@@ -26,14 +28,14 @@ A basic example on P30 mice ependymal tissue
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/reconstruction 
 ```
 
-  * to generate 1000 randomly shuffled ependymal tissue (random SET) :
+  * to generate 1000 randomly shuffled ependymal tissues (random SET) :
 
 
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/allSimuOutput -s 1000
 ```
 
-Note that the random SET are generated one after the others and it can take long time.
+Note that the random SET are generated one after the others and it can take long time. To accelerate the calcul, 1) use the -n option and specify a number of CPU to use multiprocessing 2) use a cluster to realize in parallele several unit shuffle simulation  (-s 1 instead of -s 1000) 3) anticipate the use of a mean measurement to analyse your observation of interest : the distribution a mean value can be approximate with only one occurence of the distribution with a gaussian $(\mu, std/sqrt(n))$, n the number of measure in the distribution.
 
 ## Arguments details : 
 
@@ -54,6 +56,14 @@ Note that the random SET are generated one after the others and it can take long
 .tiff image file containing the last tessellation, labeled correspondingly to the labeled image input.
 
 .csv containing parameters per cells extracted from the segmentation, then the final values of the parameters
+
+-wp generate a .txt containing the new position of the intracellular marker per cell
+
+-i generate a .tiff containing the intracellular morphing image
+
+-d generate 2 .tiff 1) the labels 2) the corresponding shapes draw over border image
+
+
 
 ## Other examples : 
 
