@@ -1,4 +1,4 @@
-# cellmodelling 
+
 
 The *SET* folder contains the python codes of the SET (Synthesis of Epithelial Tissue) model developed in the Biocomp group of IBENS institute.
 
