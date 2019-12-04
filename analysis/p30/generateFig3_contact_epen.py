@@ -1,4 +1,10 @@
-##code pour figure 3 ! contact
+## code to generate figure 3 (stem cell contacts)
+##
+## previous step before running this code : 
+## 1) need to generate random SET and the reconstruction before : with 
+## python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/allSimuOutput -s 1000
+## 2) need to analyze the random set, see p30pos9_contactStemCells.py
+
 from random import shuffle,sample
 from skimage.measure import label, regionprops
 import random
@@ -264,7 +270,7 @@ nbContactSim_SyntheticUnClust = extractObservedNumberOfContact(imgSyntheticUnClu
 nbContactSim_SyntheticClust = extractObservedNumberOfContact(imgSyntheticClustFileName,listeCelluleSouche)
 
 import matplotlib as mpl
-colorObsSim =(255/255.,88/255.,0/255.) #(159/255.,41/255.,94/255.)
+colorObsSim =(255/255.,88/255.,0/255.) 
 
 fig = plt.figure(figsize=(4.5,15))
 ax1 = fig.add_subplot(412)
@@ -275,10 +281,9 @@ calculPvalue(nbContactSim_SyntheticClust,distri_nbContactShuffle_SyntheticClust,
 valuesBins,binsLim, patches3 = plt.hist(distriGrid_nbContactShuffle_SyntheticClust,fc='none', lw=1., histtype='step',color=(52/255.,192/255.,237/255.),bins = np.array(range(np.min(distriGrid_nbContactShuffle_SyntheticClust),np.max(distriGrid_nbContactShuffle_SyntheticClust)+2))-0.5)
 calculPvalue(nbContactSim_SyntheticClust,distriGrid_nbContactShuffle_SyntheticClust,valuesBins,binsLim, 'clustGrid')
 lineObs = plt.vlines(nbContactSim_SyntheticClust,-1,100,color = colorObsSim,label = 'synthetic clustering')
-#plt.vlines(64,-1,100,color='g')
+
 plt.ylim(ymin=0)
 plt.xlim(xmin=0,xmax = 160)
-#plt.xlabel('number of clusters per image')
 plt.ylabel('frequency')
 
 lines = ax1.get_lines()
@@ -302,10 +307,10 @@ valuesBins,binsLim, patches = plt.hist(distri_nbContactShuffle_ObsSim,fc='none',
 valuesBins,binsLim, patches = plt.hist(distriGrid_nbContactShuffle_Sim,fc='none', lw=1., histtype='step',color=(52/255.,192/255.,237/255.),bins = np.array(range(np.min(distriGrid_nbContactShuffle_Sim),np.max(distriGrid_nbContactShuffle_Sim)+2))-0.5)
 plt.vlines(nbContactSim_ObsSim,-1,100, linestyles = 'dashed',color = colorObsSim,label = 'reconstruction')
 plt.vlines(nbContactSim_ObsSeg,-1,100, linestyles = 'dashed',color = (200/255.,50/255.,50/255.),label = 'segmentation')
-#plt.vlines(64,-1,100,color='g')
+
 plt.ylim(ymin=0)
 plt.xlim(xmin=0,xmax = 160)
-#plt.xlabel('number of clusters per image')
+
 plt.ylabel('frequency')
 plt.legend(loc = 'best')
 
@@ -319,10 +324,8 @@ valuesBins,binsLim, patches = plt.hist(distri_nbContactShuffle_SyntheticRand,fc=
 
 valuesBins,binsLim, patches = plt.hist(distriGrid_nbContactShuffle_SyntheticRand,fc='none', lw=1., histtype='step',color=(52/255.,192/255.,237/255.),bins = np.array(range(np.min(distriGrid_nbContactShuffle_SyntheticRand),np.max(distriGrid_nbContactShuffle_SyntheticRand)+2))-0.5)
 plt.vlines(nbContactSim_SyntheticRand,-1,100,color = colorObsSim,label = 'synthetic randomization')
-#plt.vlines(64,-1,100,color='g')
 plt.ylim(ymin=0)
 plt.xlim(xmin=0,xmax = 160)
-#plt.xlabel('number of clusters per image')
 plt.ylabel('frequency')
 plt.legend(loc = 'best')
 
@@ -335,7 +338,7 @@ valuesBins,binsLim, patches = plt.hist(distri_nbContactShuffle_SyntheticUnClust,
 
 valuesBins,binsLim, patches = plt.hist(distriGrid_nbContactShuffle_SyntheticUnClust,fc='none', lw=1., histtype='step',color=(52/255.,192/255.,237/255.),bins = np.array(range(np.min(distriGrid_nbContactShuffle_SyntheticUnClust),np.max(distriGrid_nbContactShuffle_SyntheticUnClust)+2))-0.5)
 plt.vlines(nbContactSim_SyntheticUnClust,-1,100,color = colorObsSim,label = 'synthetic unclustering')
-#plt.vlines(64,-1,100,color='g')
+
 plt.ylim(ymin=0)
 plt.xlim(xmin=0,xmax = 160)
 plt.xlabel('number of contacts per image')
