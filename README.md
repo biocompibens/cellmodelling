@@ -38,8 +38,8 @@ python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmenta
 
 Note that the random SET are generated one after the others and it can take long time. To accelerate the calcul, 
 1) use the -n option and specify a number of CPU to use multiprocessing 
-2) use a cluster to realize in parallele several unit shuffle simulation  (-s 1 instead of -s 1000) 
-3) anticipate the use of a mean measurement to analyse your observation of interest : the distribution a mean value can be approximate with only one occurence of the distribution with a gaussian <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/>, n the number of measures in the distribution.
+2) use a cluster to realize in parallel several unit shuffle simulations  (-s 1 instead of -s 1000) 
+3) anticipate the use of a mean measurement to analyse your observation of interest : the distribution a mean value can be approximated with only one occurrence of the distribution with a Gaussian <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/>, n the number of measures in the distribution.
 
 ## Arguments details : 
 
@@ -55,6 +55,7 @@ Note that the random SET are generated one after the others and it can take long
 	 2) then the class names that you want to shuffle (can be more than 1)
 * -wp : option to morph only a position of an intracellular component. Need the path of the file containing the position per label (.npy)
 * -r : redo a simulation. Need the path of the csv generate during the first simulation (.csv)
+* -in : number max of iterations realized by the Lloyd algorithm to consider the convergence. By default, it is 80.
 
 ## Output : 
 .tiff image file containing the last tessellation, labeled correspondingly to the labeled image input.
@@ -76,7 +77,7 @@ Note that the random SET are generated one after the others and it can take long
 * Analysis of intercellular components relation : the centriole orientation of a E18 ependymal tissue
 
 ```
-python ./SET/model.py  -l ./dataExamples/ependymaE18/E18\_24\_series51channel2WFGM22LABEL.tif -o ./dataExamples/ependymaE18 -p 5 -wp ./dataExamples/ependymaE18/centrioleDetection_s51.npy
+python ./SET/model.py  -l ./dataExamples/ependymaE18/E18_24_series51channel2WFGM22LABEL.tif -o ./dataExamples/ependymaE18 -p 5 -wp ./dataExamples/ependymaE18/centrioleDetection_s51.npy
 ```
 
 ## Reference: 

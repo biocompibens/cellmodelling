@@ -68,6 +68,8 @@ if __name__ == "__main__":
 	parser.add_argument("-p", "--parameters", type=str, default='',help="number of used parameters (5(ellipse),6(p-only),7(a-only),8(all))\n\n")
 	parser.add_argument("-wp", "--warpingPoint", type=str, help="point file\n\n")
 	parser.add_argument("-r", "--redo",  type=str,help="redo a simulation from parameters\n\n")
+	parser.add_argument("-in", "--iterationNumber",  type=int,help="number of iterations\n\n")
+
 
 	if len(sys.argv[1:])==0:
 		parser.print_help()
@@ -85,6 +87,10 @@ if __name__ == "__main__":
 	_paramShape = options.parameters
 	pointFileName = options.warpingPoint
 	redoFile = options.redo
+	_interNumber = option.iterationNumber
+
+	if _interNumber== None:
+		_interNumber = 80
 
 	if _paramShape == None or _paramShape == '5' or _paramShape == 'ellipse':
 		_paramShape = ''
@@ -202,7 +208,7 @@ if __name__ == "__main__":
 
 		im_labels_orig_sid = rid[im_labels_orig] #converting original labels to 0..n
 	
-		paramsOut, labels = Lloyd(I, labels, params, params_orig, border, im_labels_orig_sid, im_values_orig, n_jobs=n_jobs, max_iter=80, dir=dirmovie, pShape =_paramShape)
+		paramsOut, labels = Lloyd(I, labels, params, params_orig, border, im_labels_orig_sid, im_values_orig, n_jobs=n_jobs, max_iter=_interNumber, dir=dirmovie, pShape =_paramShape)
 
 		if pointFileName :
 
