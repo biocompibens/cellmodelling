@@ -39,7 +39,7 @@ python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmenta
 Note that the random SET are generated one after the others and it can take long time. To accelerate the calcul, 
 1) use the -n option and specify a number of CPU to use multiprocessing 
 2) use a cluster to realize in parallel several unit shuffle simulations  (-s 1 instead of -s 1000) 
-3) anticipate the use of a mean measurement to analyse your observation of interest : the distribution a mean value can be approximated with only one occurrence of the distribution with a Gaussian <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/>, n the number of measures in the distribution.
+3) anticipate the use of a mean measurement to analyse your observation of interest : the distribution of a mean value can be approximated with only one occurrence of the distribution with a Gaussian <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/>, n the number of measures in the distribution.
 
 ## Arguments details : 
 
