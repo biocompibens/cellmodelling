@@ -1,33 +1,31 @@
 
--------
-
-The *SET* folder contains the python codes of the SET (Synthesis of Epithelial Tissue) model developed in the Biocomp group of IBENS institute.
-
-The *dataExamples* folder contains some data that are necessary to apply the provided examples of using the SET model.
-
-The *analysis* folder contains the python codes used to analyse SET outputs generated for each application present in the related paper.
-
-------
-
 # SET 
 
-The SET model builds an image tessellation that reconstruct a possible cell organization following a cell shape distribution extracted from a tissue segmentation.
-Depending of the arguments, the model will : reconstruct the observed tissue or realize a random SET of the tissue with elliptic shaped cells, constrained the cell shape to be ellipses or to have a higher range of shape possibilities, ... 
+The SET method fit a flexible distance function on each cell of an image and use them to generate a cell tesselation. The resulting tesselation is either a close reconstruction of the actual image, either an image of cell tesselation that is made of the same cells organized randomly. 
+
+The SET method can be used to generate a null distribution in order to statistically test for the significance of an observed pattern.
+
+# Content description
+
+The *SET* folder contains the python codes to generate reconstruction and random SET (Synthesis of Epithelial Tissue) from an image.
+
+The *dataExamples* folder contains exemple images to be processed by SET.
+
+The *analysis* folder contains the python codes used in the paper to analyse SET outputs and generate statistics.
+
 
 ## Configuration : 
-run with python 2.7
-
-use PIL, networkx, multiprocessing,tqdm,panda, cv2, packages
+python 2.7, PIL, networkx, multiprocessing,tqdm,panda, cv2, packages
 
 ## Quick start : 
 A basic example on P30 mice ependymal tissue
-  * to reconstruct the ependymal tissue (reconstruction by SET): 
+  * to only reconstruct the ependymal tissue (reconstruction by SET): 
 
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/reconstruction 
 ```
 
-  * to generate 1000 randomly shuffled ependymal tissues (random SET) :
+  * to generate 1000 randomly shuffled ependymal tissues (random SET) on top of the reconstruction:
 
 
 ```
