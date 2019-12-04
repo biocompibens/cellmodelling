@@ -18,40 +18,40 @@ The *analysis* folder contains the python codes used in the paper to analyse SET
 python 2.7, PIL, networkx, multiprocessing,tqdm,panda, cv2, packages
 
 ## Quick start : 
-A basic example on P30 mice ependymal tissue
-  * to only reconstruct the ependymal tissue (reconstruction by SET): 
+Example: P30 mice ependymal tissue
+  * to reconstruct the cell tesselation from the actual image (reconstruction by SET): 
 
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/reconstruction 
 ```
 
-  * to generate 1000 randomly shuffled ependymal tissues (random SET) on top of the reconstruction:
+  * to generate 1000 randomly shuffled cell tesselations from the same cells (random SET):
 
 
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/allSimuOutput -s 1000
 ```
 
-Note that the random SET are generated sequencially so it can take long time. To accelerate the process you can: 
-1) use the -n option to specify a number of CPUs such that the process will be parallelized 
-2) use a computing cluster to process in parallel random SET  (-s 1 instead of -s 1000 but on 1000 jobs) 
-3) consider a mean measurement over items to analyse your observation of interest : the distribution of a mean value can be approximated with only one occurrence of the distribution with a Gaussian <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/>, n the number of measures in the distribution.
+Note that the 1000 random SET are generated sequencially so that it can take a long time. To accelerate the process you can: 
+1) use the -n option to specify a max number of CPUs to use such that the process will be parallelized on n CPUs 
+2) use a computing cluster to process in parallel random SETs. In this case a 1000 jobs with the option "-s 1" can be considered. Note that each job can still be also parallized using the -n option. Note also that each job can generate a subset of random SETs. For instance, 100 jobs with the option "-s 10" would still generate 1000 random SETs.  
+3) consider the sample mean distribution of a cell to cell relationship feature as it can be approximated by a Gaussian distribution with parameters <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/> following the Central Limit Theorem. n the number of measures in the sample.
 
 ## Arguments details : 
 
-* -l : label image path of the studied tissue (tif, png or ...)
-* -s : option to shuffle randomly cell positions. Must be followed by the number of random SET to generate. 
-* -o : name folder output (path)
-* -p : number of parameters used to construct the shape distance function. Default is 5 (ellipses). Can be 5 (mahalanobis distance function), 6 (Minkowski metrics), 7 (asymmetric elliptic shape), 8 (all parameters).
-* -i : input raw image (RGB or not), when present : morphing of the intracellular contents is activate. (.tif, png or ...)
-* -n : number of jobs for parallel processing
-* -d : path movie directory name. Option to generate each Lloyd iteration image.
-* -sp : subpopulation shuffling option. Must precise 
-	 1) the name (path) of the file containing cell classification (.npy) 
-	 2) then the class names that you want to shuffle (can be more than 1)
-* -wp : option to morph only a position of an intracellular component. Need the path of the file containing the position per label (.npy)
-* -r : redo a simulation. Need the path of the csv generate during the first simulation (.csv)
-* -in : max number of iterations realized by the Lloyd algorithm to consider the convergence. By default, it is 80.
+* -l : image of cell label (image file path). All pixel of this image must take as a value an integer corresponding to a unique cell.
+* -s : generate as many random SET as specified by the specified number (integer).
+* -o : name of the output folder (folder path)
+* -p : number of parameters used to construct the distance function. Can be 5 (Mahalanobis distance model cells as ellipses), 6 (MAT distance model cells as superellipses), 7 (Asymetric distance model cells as ovoidal asymetric shapes), 8 (AMAT distance includes all parameters). Default is 5.
+* -i : input raw image (greylevel or RGB), activates morphing of the intracellular contents (.tif, png or ...)
+* -n : maximum number of simulteneously running CPU for parallel processing (integer)
+* -d : path movie directory name (folder path). Option to generate an image for each Lloyd iteration.
+* -sp : subpopulation shuffling. Must specify 
+	 1) the name (path) of the file containing cell class (.npy) 
+	 2) the class names that should be shuffle (can be more than 1)
+* -wp : option to morph only a position of an intracellular component. Need the path of the file containing the position of an organel per label (.npy)
+* -r : reprocess a SET. Need the path of the csv generated by the SET (.csv)
+* -in : max number of iterations for the Lloyd algorithm . Default is 80 which is valid for most application.
 
 ## Output : 
 .tiff image file containing the last tessellation, labeled correspondingly to the labeled image input.
