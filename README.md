@@ -54,7 +54,7 @@ Note that the 1000 random SET are generated sequencially so that it can take a l
 * -in : max number of iterations for the Lloyd algorithm . Default is 80 which is valid for most application.
 
 ## Output : 
-.tiff image file containing the last tessellation, labeled correspondingly to the labeled image input.
+.tiff image file containing the SET tesselation, labels match the labels of the image input.
 
 .csv containing parameters per cells extracted from the segmentation, then the final values of the parameters
 
@@ -64,7 +64,7 @@ Note that the 1000 random SET are generated sequencially so that it can take a l
 
 -d option generates 2 .png files : 
 	1) the labels 
-	2) the corresponding shapes draw over border image
+	2) the corresponding shapes drawn over border image
 
 
 
