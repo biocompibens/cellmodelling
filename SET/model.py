@@ -68,7 +68,7 @@ if __name__ == "__main__":
 	parser.add_argument("-p", "--parameters", type=str, default='',help="number of used parameters (5(ellipse),6(p-only),7(a-only),8(all))\n\n")
 	parser.add_argument("-wp", "--warpingPoint", type=str, help="point file\n\n")
 	parser.add_argument("-r", "--redo",  type=str,help="redo a simulation from parameters\n\n")
-	parser.add_argument("-in", "--iterationNumber",  type=int,help="number of iterations\n\n")
+	parser.add_argument("-it", "--iterationNumber",  type=int,help="number of iterations\n\n")
 
 
 	if len(sys.argv[1:])==0:
@@ -130,18 +130,13 @@ if __name__ == "__main__":
 	if  not(os.path.exists(outPath)): 
 		os.makedirs(outPath)
 
-	for iSimu in range(max([0,shuffle])+1) :
+	for iSimu in range(max([1,shuffle])) :
 		if shuffle:
-
-			if iSimu == shuffle: 
-				outfile = outPath +"/unshuffled.tiff"
-				fOutfile = outPath +"/unshuffled"+'uLCSTable.csv'
-			else :
-				outfile = outPath +("/%04d"%iSimu)+".tiff"
-				fOutfile = outPath +("/%04d"%iSimu)+'sLCSTable.csv'
+			outfile = outPath +("/%04d"%iSimu)+".tiff"
+			fOutfile = outPath +("/%04d"%iSimu)+'sLCSTable.csv'
 		else : 
-				outfile = outPath +"/unshuffled.tiff"
-				fOutfile = outPath +"/unshuffled"+'uLCSTable.csv'
+			outfile = outPath +"/unshuffled.tiff"
+			fOutfile = outPath +"/unshuffled"+'uLCSTable.csv'
 		print([outfile,fOutfile])
 
 		if redoFile :

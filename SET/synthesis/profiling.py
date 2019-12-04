@@ -34,8 +34,23 @@ def _compute_singlecell(cellParam):
 	
 	volumei = yxmaskS.shape[0] 
 	borderi = (np.any(yxmaskS[:,0] == 0) or np.any(yxmaskS[:,1] == 0) or np.any(yxmaskS[:,0] == _cellsS.shape[0]-1) or np.any(yxmaskS[:,1] == _cellsS.shape[1]-1))
-		
-	u1, u2, alpha, l1, l2, a1, a2, p = fit_all(yxborderS, label, _p)
+	if _p == '' or _p == 5 :
+		Ci = np.mean(yxmaskS, axis=0)
+		yxmaskS_centered = yxmaskS - Ci
+		#embed()
+		Si = np.dot(yxmaskS_centered.T, yxmaskS_centered) / yxmaskS_centered.shape[0] #covariance
+	
+		try:
+			lr, vr = np.linalg.eigh(Si)
+			eigenvalsi = lr
+			rotanglei = np.arctan2(vr[0,1], vr[1,1])
+		except np.linalg.LinAlgError as e:
+			rotanglei = 0
+			eigenvalsi = list([1,1])
+			print('np.linalg.LinAlgError (profiling.py - _compute_singlecell): %s' % e)
+		u1, u2, alpha, l1, l2, a1, a2, p = Ci[0],Ci[1],rotanglei,eigenvalsi[0],eigenvalsi[1],0,0,2
+	else :
+		u1, u2, alpha, l1, l2, a1, a2, p = fit_all(yxborderS, label, _p)
 	
 	if warp:
 		values = compute_warp(_imS, yxmaskS, _yxmaskD, yxborderS, _yxborderD, rotangle=0)
