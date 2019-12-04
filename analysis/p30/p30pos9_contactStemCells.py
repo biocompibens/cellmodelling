@@ -13,7 +13,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from IPython import embed
 
-simulation = ['./dataExamples/ependymaP30/allSimuOutput/unshuffled.tiff']
+simulation = ['./dataExamples/ependymaP30/reconstruction/unshuffled.tiff']
 
 directory = './dataExamples/ependymaP30/allSimuOutput/'
 outputRep = './dataExamples/ependymaP30/nbContactAnalysis'

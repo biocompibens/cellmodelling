@@ -212,7 +212,7 @@ inputRep ='./dataExamples/ependymaP30/'
 
 imgSegFileName = './dataExamples/ependymaP30/Fused_position9_P30_IAP_LAPP_HC.tif'
 
-imgSimuFileName = './dataExamples/ependymaP30/allSimuOutput/unshuffled.tiff'
+imgSimuFileName = './dataExamples/ependymaP30/reconstruction/unshuffled.tiff'
 
 imgSyntheticRandFileName ='./dataExamples/ependymaP30/73_rand_oct2019.tif'
 
