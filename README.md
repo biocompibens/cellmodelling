@@ -37,6 +37,13 @@ Note that the random SET are generated sequencially so it can take long time. To
 2) use a computing cluster to process in parallel random SET  (-s 1 instead of -s 1000 but on 1000 jobs) 
 3) consider a mean measurement over items to analyse your observation of interest : the distribution of a mean value can be approximated with only one occurrence of the distribution with a Gaussian <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/>, n the number of measures in the distribution.
 
+  * comput statistics :
+
+```
+python ./analysis/p30/p30pos9_contactStemCells.py
+```
+
+
 ## Arguments details : 
 
 * -l : label image path of the studied tissue (tif, png or ...)
