@@ -15,9 +15,12 @@ The *analysis* folder contains the python codes used in the paper to analyse SET
 
 
 ## Configuration : 
-python 2.7, matplotlib 3.0.0, numpy 1.16.2, scipy 1.2., PIL 4.2.1, networkx 2.2, multiprocessing 0.70a1, tqdm 4.20.0,panda 0.23.4, cv2 2.4.9.11 packages
-
-
+python 2.7, PIL 4.2.1, networkx 2.2, multiprocessing 0.70a1, tqdm 4.20.0,panda, cv2 2.4.9.1, scipy 1.2.1 packages
+scikit-image           0.10.1                
+scikit-learn           0.20.3
+pandas                 0.23.4
+matplotlib             3.0.0
+numpy                  1.16.2 
 ## Quick start : 
 Example: P30 mice ependymal tissue
   * to reconstruct the cell tesselation from the actual image (reconstruction by SET): 
