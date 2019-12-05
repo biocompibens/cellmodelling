@@ -1,7 +1,7 @@
 
 # SET 
 
-The SET method fit a flexible distance function on each cell of an image and use them to generate a cell tesselation. The resulting tesselation is either a close reconstruction of the actual image, either an image of cell tesselation that is made of the same cells organized randomly. 
+The SET method fit a flexible distance function on each cell of a segmented image and use them to generate a cell tesselation. The resulting tesselation is either a close reconstruction of the actual image, either an image of cell tesselation that is made of the same cells organized randomly. 
 
 The SET method can be used to generate a null distribution in order to statistically test for the significance of an observed pattern.
 
