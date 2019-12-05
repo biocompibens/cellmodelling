@@ -7,7 +7,7 @@ The SET method fit a flexible distance function on each cell of a segmented imag
 
 The SET method can be used to generate a null distribution in order to statistically test for the significance of an observed pattern.
 
-## This repository content
+## Repository content
 
 The *SET* folder contains the python codes to generate reconstruction and random SET (Synthesis of Epithelial Tissue) from an image.
 
