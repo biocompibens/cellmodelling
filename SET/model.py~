@@ -179,7 +179,7 @@ if __name__ == "__main__":
 	
 		if shufpopInfo!= None :
 			labelIndx = np.unique(im_labels_orig)
-			cellClass = readClassOfSubpop(shufpopInfo[0])
+			cellClass = readClassOfSubpop((shufpopInfo[0])
 			gobletSimuLabels=[]
 			for popToshuffle in range(1,len(shufpopInfo)):
 				gobletSimuLabels.append( np.squeeze(labelIndx[np.argwhere(cellClass==str(shufpopInfo[popToshuffle]))]) )
