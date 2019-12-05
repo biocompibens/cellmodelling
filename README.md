@@ -33,12 +33,12 @@ python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmenta
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/allSimuOutput -s 1000
 ```
 
-Note that the 1000 random SET are generated sequencially so that it can take a long time. To accelerate the process you can: 
-1) use the -n option to specify a max number of CPUs to use such that the process will be parallelized on n CPUs 
-2) use a computing cluster to process in parallel random SETs. In this case a 1000 jobs with the option "-s 1" can be considered. Note that each job can still be also parallized using the -n option. Note also that each job can generate a subset of random SETs. For instance, 100 jobs with the option "-s 10" would still generate 1000 random SETs.  
-3) consider the sample mean distribution of a cell to cell relationship feature as it can be approximated by a Gaussian distribution with parameters <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/> following the Central Limit Theorem. n the number of measures in the sample.
+Note that the 1000 random SET are generated sequencially so that it can take a long time. To speed up the process you may: 
+1) use the -n option to specify a max number of CPUs to use simultaneously such that the generation of each SET will be parallelized on n CPUs. Still the SET will be generated sequencially. Note that the creation of the reconstruction by SET also support the -n option. 
+2) use a computing cluster to process in parallel random SETs. In this case a 1000 jobs with the option "-s 1" can be considered. Note that each job can still be also parallelized using the -n option. Note also that each job can be set to generate a subset of random SETs. For instance, 100 jobs with the option "-s 10" can be used to generate 1000 random SETs.  
+3) consider the sample mean distribution of a cell to cell relationship as feature of interest as it can be approximated by a Gaussian distribution from a single (or a few) random SET with parameters <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/> following the Central Limit Theorem. n the number of measures in the sample.
 
-  * comput statistics :
+  * compute statistics :
 
 ```
 python ./analysis/p30/p30pos9_contactStemCells.py
@@ -62,23 +62,23 @@ python ./analysis/p30/p30pos9_contactStemCells.py
 * -it : max number of iterations for the Lloyd algorithm . Default is 80 which is valid for most application.
 
 # Output : 
-.tiff image file containing the SET tesselation, labels match the labels of the image input.
+.tiff image file including the labels of the SET tesselation, these label values match the label values of the image input (cell i corresponds to synthtetic cell i)
 
 .tsv containing parameters per cells extracted from the segmentation, the shuffled positions and then the final values of the parameters
 
--wp option generates a .tsv containing the new position of the intracellular marker per cell
+-wp option generates a .tsv containing the computed position of the intracellular marker per cell in the synthtetic cells
 
--i option generates a .png containing the intracellular morphing image
+-i option generates a .png where each original cell texture is moved into its new location in the SET.
 
--d option generates 2 .png files : 
-	1) the labels 
-	2) the corresponding shapes drawn over border image
+-d option generates 2 .png files per Lloyd iteration : 
+	1) the image of SET where cell labels indicates where each original cell is
+	2) the image of SET where each cell content is filled with the original cell texture
 
 
 
 # Other examples : 
 
-* Analysis of intercellular components relation : the centriole orientation of a E18 ependymal tissue
+* Analysis of intercellular components relationships : the centriole orientation of a E18 ependymal tissue
 
 ```
 python ./SET/model.py  -l ./dataExamples/ependymaE18/E18_24_series51channel2WFGM22LABEL.tif -o ./dataExamples/ependymaE18 -p 5 -wp ./dataExamples/ependymaE18/centrioleDetection_s51.npy
