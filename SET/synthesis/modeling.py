@@ -18,7 +18,48 @@ _border = None
 _cellsborder = None
 _params = None
 _params_orig = None
+_S_1 = None
 
+def _min_dist_5p(labi):
+
+	idx = np.where(_labels==labi)[0]
+	idist = []
+
+	for j in _idxnn[labi]: #take each of the 20 closest centers of the label = labi
+		idist.append(cdist(_I[idx],_params[j,:2][np.newaxis,:],metric='mahalanobis', VI=_S_1[j])) #VI : ndarray The inverse of the covariance matrix for Mahalanobis
+	idist = np.hstack(idist)
+
+	return idx, _idxnn[labi][np.argmin(idist,axis=1)], np.min(idist,axis=0) 
+
+def _mean_5p(labi):
+
+	idx = np.where(_labels==labi)[0]
+	if idx.shape[0] <= 1 or _border[labi]: # if small label or at borders
+		return _params[labi,0].copy(),_params[labi,1].copy(), _params[labi,2].copy()
+	else:
+		Ci = np.mean(_I[idx], axis=0)
+		try:
+			
+			yxcelli = _I[idx] - Ci
+			Sj = np.dot(yxcelli.T, yxcelli) / yxcelli.shape[0]
+			lj, vj = np.linalg.eigh(Sj)
+			alphaj = np.arctan2(vj[0,1], vj[1,1])
+
+			# force angle to be continuous
+			if(np.abs(_params[labi,2]-alphaj) > np.pi/2):
+				if(alphaj<_params[labi,2]):
+					alphaj += np.pi
+				else:
+					alphaj -= np.pi
+			if alphaj > np.pi:
+				alphaj -= 2*np.pi
+			if alphaj < -np.pi:
+				alphaj += 2*np.pi
+
+		except np.linalg.LinAlgError as e:
+			print('np.linalg.LinAlgError (modeling.py - _mean): %s' % e)
+			return Ci[0],Ci[1],_params[labi,2].copy()#, np.identity(2)
+		return Ci[0],Ci[1], alphaj
 
 def _min_dist(labi):
 	try:
@@ -59,7 +100,7 @@ def _mean(labi):
 	
 
 def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig, dir=None, prefix='000', n_jobs=1, max_iter=80,pShape = ''): 
-	global _labels, _idxnn, _I, _border, _cellsborder, _params, _params_orig,_5p
+	global _labels, _idxnn, _I, _border, _cellsborder, _params, _params_orig,_5p,_S_1
 
 	_I = I
 	_border = border
@@ -67,7 +108,11 @@ def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig
 	_params_orig = params_orig
 	_5p = pShape
 
-	
+	#reconstruct S from angles_orig and l_orig
+	_P = [np.array([[np.cos(alpha),-np.sin(alpha)],[np.sin(alpha),np.cos(alpha)]]) for alpha in params_orig[:,2]] # set rotation matrices
+	S_orig = np.array([np.linalg.inv(np.dot(np.dot(np.linalg.inv(_p),np.identity(2)*_l),_p)) for _l, _p in zip(params_orig[:,(3,4)], _P)]) # rotate and rescale
+	_S_1 = S_orig.copy()
+
 	doWarping = im_values_orig.sum()
 
 	width = im_values_orig.shape[1]
@@ -75,16 +120,6 @@ def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig
 	NN = 20
 		
 	l=0
-
-	if dir : 
-		Image.fromarray(labels.astype(np.uint32).reshape((height,width))).save('%s/labels_%s_%04d.png' % (dir, prefix, l))
-		im,imE = image_synthesis(labels.reshape((height, width)), params, params_orig, im_labels_orig, im_values_orig, n_jobs=n_jobs, pShape=pShape,display=doWarping)
-		Image.fromarray(imE, 'RGB').save('%s/shapes_%s_%04d.png' % (dir, prefix, l))
-		if doWarping:
-			Image.fromarray(im, 'RGB').save('%s/morph_%s_%04d.png' % (dir, prefix, l))
-		
-
-	l+=1
 
 	moving=True
 	maxmoving=0
@@ -100,11 +135,17 @@ def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig
 		parameters = list(range(C.shape[0]))
 		if n_jobs > 1:
 			pool = Pool(n_jobs)
-			results = list(pool.imap(_min_dist, parameters))
+			if _5p == '':
+				results = list(pool.imap(_min_dist_5p, parameters))#_5p
+			else : 
+				results = list(pool.imap(_min_dist, parameters))
 			pool.close()
 			pool.join()
 		else:
-			results = list(map(_min_dist, parameters))	
+			if _5p == '':
+				results = list(map(_min_dist_5p, parameters))		
+			else : 
+				results = list(map(_min_dist, parameters))	
 		_idxnn = None
 		
 		newlabels=np.zeros(labels.shape, dtype=int)
@@ -118,7 +159,7 @@ def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig
 				newlabels[idx] = np.squeeze(lab)
 			
 		labels = newlabels
-
+		_labels = labels
 		
 		im_labels = labels.reshape((height, width))
 		allborder = (morphological_gradient(im_labels, size=3) > 0)
@@ -135,18 +176,29 @@ def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig
 		if n_jobs > 1:
 			try : 
 				pool = Pool(n_jobs)
-				results = list(pool.imap(_mean, parameters))
+				if _5p == '':
+					results =  list(pool.imap(_mean_5p, parameters))#_5p
+				else : 
+					results = list(pool.imap(_mean, parameters))
 				pool.close()
 				pool.join()
 			except :
-				results = list(map(_mean, parameters))
+				if _5p == '':
+					results =  list(map(_mean_5p, parameters))#_5p
+				else :
+					results = list(map(_mean, parameters))
 		else:
-			results = list(map(_mean, parameters))
+			if _5p == '':
+				results =  list(map(_mean_5p, parameters))#_5p
+			else :
+				results = list(map(_mean, parameters))
 		_cellsborder = None
 		
-		params=np.array(results)#[:,(0,1,2)]
+		params=np.array(results)
 		_labels = None
 
+		rotMatrix = [np.array([[np.cos(alpha_l),-np.sin(alpha_l)],[np.sin(alpha_l),np.cos(alpha_l)]]) for alpha_l in params[:,2]]
+		_S_1 = np.array([np.linalg.inv(np.dot(np.dot(np.linalg.inv(_p),np.identity(2)*_l),_p)) for _l, _p in zip(params_orig[:,(3,4)], rotMatrix)])
 		newC = params[:,(0,1)]
 		
 		moving = np.linalg.norm(C-newC, ord=np.inf) > 0
@@ -174,7 +226,7 @@ def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig
 	_I = None
 	_border = None
 	_params_orig = None
-
+	_S_1 = None
 	return params, labels
 
 

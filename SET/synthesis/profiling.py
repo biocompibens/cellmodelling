@@ -37,7 +37,7 @@ def _compute_singlecell(cellParam):
 	if _p == '' or _p == 5 :
 		Ci = np.mean(yxmaskS, axis=0)
 		yxmaskS_centered = yxmaskS - Ci
-		#embed()
+
 		Si = np.dot(yxmaskS_centered.T, yxmaskS_centered) / yxmaskS_centered.shape[0] #covariance
 	
 		try:
