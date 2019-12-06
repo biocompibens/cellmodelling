@@ -46,8 +46,7 @@ Note that the 1000 random SET are generated sequencially so that it can take a l
 python ./analysis/p30/p30pos9_contactStemCells.py
 ```
 
-
-## Arguments details : 
+## model.py arguments details : 
 
 * -l : image of cell label (image file path). All pixel of this image must take as a value an integer corresponding to a unique cell.
 * -s : generate as many random SET as specified by the specified number (integer).
