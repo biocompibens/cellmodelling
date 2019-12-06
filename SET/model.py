@@ -232,7 +232,7 @@ if __name__ == "__main__":
 		if pointFileName :
 
 			imD,xyc =points_synthesis(pointFileName, labels, paramsOut[:,0:2], im_values_orig,  im_labels_orig_sid, paramsOut[:,2], params_orig[:,2], params_orig[:,3:5], id, outfile, n_jobs=n_jobs, display=True)
-			simCentriolFile = open(outfile[:iipp]+'_centriolfinalposition.tsv','w')
+			simCentriolFile = open(outfile[:outfile.rfind('.')]+'_centriolfinalposition.tsv','w')
 			for ilabel in range(len(id)): 
 				try :
 					simCentriolFile.write(str(id[ilabel]) + '\t' +str(xyc[ilabel][0]) +'\t' +str(xyc[ilabel][1])+'\n')
