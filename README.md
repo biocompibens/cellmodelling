@@ -22,13 +22,13 @@ python 2.7, matplotlib 3.0.0, numpy 1.16.2, scipy 1.2., PIL 4.2.1, networkx 2.2,
 
 ## Quick start exemple : 
 Example: P30 mice ependymal tissue
-  * to reconstruct the cell tesselation from an actual image (reconstruction by SET): 
+* to reconstruct the cell tesselation from an actual image (reconstruction by SET): 
 
 ```
 python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/reconstruction 
 ```
 
-  * to generate 1000 randomly shuffled cell tesselations from the cells of the same image (random SET):
+* to generate 1000 randomly shuffled cell tesselations from the cells of the same image (random SET):
 
 
 ```
@@ -36,18 +36,17 @@ python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmenta
 ```
 
 Note that the 1000 random SET are generated sequencially so that it can take a long time. To speed up the process you may: 
-1) use the -n option to specify a max number of CPUs to use simultaneously such that the generation of each SET will be parallelized on n CPUs. Still the SET will be generated sequencially. Note that the creation of the reconstruction by SET also support the -n option. 
-2) use a computing cluster to process in parallel random SETs. In this case a 1000 jobs with the option "-s 1" can be considered. Note that each job can still be also parallelized using the -n option. Note also that each job can be set to generate a subset of random SETs. For instance, 100 jobs with the option "-s 10" can be used to generate 1000 random SETs.  
-3) consider the sample mean distribution of a cell to cell relationship as feature of interest as it can be approximated by a Gaussian distribution from a single (or a few) random SET with parameters <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/> following the Central Limit Theorem. n the number of measures in the sample.
+1. use the -n option to specify a max number of CPUs to use simultaneously such that the generation of each SET will be parallelized on n CPUs. Still the SET will be generated sequencially. Note that the creation of the reconstruction by SET also support the -n option. 
+2. use a computing cluster to process in parallel random SETs. In this case a 1000 jobs with the option "-s 1" can be considered. Note that each job can still be also parallelized using the -n option. Note also that each job can be set to generate a subset of random SETs. For instance, 100 jobs with the option "-s 10" can be used to generate 1000 random SETs.  
+3. consider the sample mean distribution of a cell to cell relationship as feature of interest as it can be approximated by a Gaussian distribution from a single (or a few) random SET with parameters <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/> following the Central Limit Theorem. n the number of measures in the sample.
 
-  * to compute statistics from the reconstruction by SET and the distribution of random SET:
+* to run the dedicated analysis that compute stem cell coupling counts from the reconstruction by SET and the distribution of random SET:
 
 ```
 python ./analysis/p30/p30pos9_contactStemCells.py
 ```
 
-
-## Arguments details : 
+## model.py arguments details : 
 
 * -l : image of cell label (image file path). All pixel of this image must take as a value an integer corresponding to a unique cell.
 * -s : generate as many random SET as specified by the specified number (integer).
