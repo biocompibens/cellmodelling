@@ -40,7 +40,7 @@ Note that the 1000 random SET are generated sequencially so that it can take a l
 2) use a computing cluster to process in parallel random SETs. In this case a 1000 jobs with the option "-s 1" can be considered. Note that each job can still be also parallelized using the -n option. Note also that each job can be set to generate a subset of random SETs. For instance, 100 jobs with the option "-s 10" can be used to generate 1000 random SETs.  
 3) consider the sample mean distribution of a cell to cell relationship as feature of interest as it can be approximated by a Gaussian distribution from a single (or a few) random SET with parameters <img src="http://latex.codecogs.com/svg.latex?(\mu,\frac{\sigma}{\sqrt{n}})" border="0"/> following the Central Limit Theorem. n the number of measures in the sample.
 
-* run a dedicated analysis that compute cell coupling statistics from the reconstruction by SET and the distribution of random SET:
+* to run the dedicated analysis that compute stem cell coupling counts from the reconstruction by SET and the distribution of random SET:
 
 ```
 python ./analysis/p30/p30pos9_contactStemCells.py
