@@ -110,8 +110,15 @@ def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig
 
 	#reconstruct S from angles_orig and l_orig
 	_P = [np.array([[np.cos(alpha),-np.sin(alpha)],[np.sin(alpha),np.cos(alpha)]]) for alpha in params_orig[:,2]] # set rotation matrices
-	S_orig = np.array([np.linalg.inv(np.dot(np.dot(np.linalg.inv(_p),np.identity(2)*_l),_p)) for _l, _p in zip(params_orig[:,(3,4)], _P)]) # rotate and rescale
-	_S_1 = S_orig.copy()
+	S_orig = np.array([np.dot(np.dot(np.linalg.inv(_p),np.identity(2)*_l),_p) for _l, _p in zip(params_orig[:,(3,4)], _P)]) # rotate and rescale
+	S_1 = []
+	for i in range(S_orig.shape[0]):
+		try:
+			S_1.append(np.linalg.inv(S_orig[i]))
+		except np.linalg.LinAlgError as e:
+			S_1.append(np.identity(2))
+			print('np.linalg.LinAlgError (modeling.py - Lloyd) on cell %d: %s' % (i,e))
+	_S_1 = np.array(S_1).copy()
 
 	doWarping = im_values_orig.sum()
 
@@ -198,7 +205,15 @@ def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig
 		_labels = None
 
 		rotMatrix = [np.array([[np.cos(alpha_l),-np.sin(alpha_l)],[np.sin(alpha_l),np.cos(alpha_l)]]) for alpha_l in params[:,2]]
-		_S_1 = np.array([np.linalg.inv(np.dot(np.dot(np.linalg.inv(_p),np.identity(2)*_l),_p)) for _l, _p in zip(params_orig[:,(3,4)], rotMatrix)])
+		S_iter = np.array([np.dot(np.dot(np.linalg.inv(_p),np.identity(2)*_l),_p) for _l, _p in zip(params_orig[:,(3,4)], rotMatrix)])
+		S_1 = []
+		for i in range(S_iter.shape[0]):
+			try:
+				S_1.append(np.linalg.inv(S_iter[i]))
+			except np.linalg.LinAlgError as e:
+				S_1.append(np.identity(2))
+				print('np.linalg.LinAlgError (modeling.py - Lloyd) on cell %d: %s' % (i,e))
+		_S_1 = np.array(S_1).copy()
 		newC = params[:,(0,1)]
 		
 		moving = np.linalg.norm(C-newC, ord=np.inf) > 0

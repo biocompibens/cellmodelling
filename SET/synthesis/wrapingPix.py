@@ -59,7 +59,7 @@ def readPixelPosition(filename):
 		f.close()
 		for iLine in xrange(len(data)):
 			data[iLine] = data[iLine].split(',')
-			data[iLine] = [int(data[iLine][0]),float(data[iLine][1]),data[iLine][2])]
+			data[iLine] = [int(data[iLine][0]),float(data[iLine][1]),float(data[iLine][2])]
 		centriolePos = np.array(data)
 	elif extension == '.tsv':
 		f = open(filename,'r')
@@ -67,7 +67,7 @@ def readPixelPosition(filename):
 		f.close()
 		for iLine in xrange(len(data)):
 			data[iLine] = data[iLine].split('\t')
-			data[iLine] = [int(data[iLine][0]),float(data[iLine][1]),data[iLine][2])]
+			data[iLine] = [int(data[iLine][0]),float(data[iLine][1]),float(data[iLine][2])]
 		centriolePos = np.array(data)
 	return centriolePos
 		

@@ -55,10 +55,10 @@ def readOutputSimFile(fileName):
 	shuf = np.array(shuf)
 	return init[1:,0].astype(int),init[1:,1].astype(float),init[1:,2].astype(float),init[1:,3].astype(float),init[1:,4].astype(float),init[1:,5].astype(float),init[1:,6].astype(float),init[1:,7].astype(float),init[1:,8].astype(float),shuf[1:,0].astype(int),shuf[1:,1].astype(float),shuf[1:,2].astype(float),shuf[1:,3].astype(float),out[1:,0].astype(int),out[1:,1].astype(float),out[1:,2].astype(float),out[1:,3].astype(float)
 
-def readClassOfSubpop(filename)
+def readClassOfSubpop(filename):
 	extension = filename[filename.rfind('.'):]	
 	if 	extension == '.npy':
-		cellClass = np.array(np.load(fileName))
+		cellClass = np.array(np.load(fileName)) 
 	elif extension == '.csv':
 		f = open(filename,'r')
 		data = f.readlines()
@@ -77,7 +77,7 @@ def readClassOfSubpop(filename)
 		cellClass = np.array(data)
 	return cellClass
 
-			cellClass = np.load(shufpopInfo[0])
+			
 
 if __name__ == "__main__":
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
 	_paramShape = options.parameters
 	pointFileName = options.warpingPoint
 	redoFile = options.redo
-	_interNumber = option.iterationNumber
+	_interNumber = options.iterationNumber
 
 	if _interNumber== None:
 		_interNumber = 80
