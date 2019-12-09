@@ -52,7 +52,7 @@ def _wrapingPix((sellabel, rot,xmaskS,ymaskS)):
 def readPixelPosition(filename):
 	extension = filename[filename.rfind('.'):]	
 	if 	extension == '.npy':
-		centriolePos = np.array(np.load(fileName))
+		centriolePos = np.array(np.load(filename))
 	elif extension == '.csv':
 		f = open(filename,'r')
 		data = f.readlines()
@@ -113,7 +113,7 @@ def points_synthesis(fileName, labD, C, imS, labS, rotangle, rotangle_real, l_re
 	_cellsborderS = cellsborderS
 	_imS = imS
 
-	centriolePos = readPixelPosition(filename)#np.array(np.load(fileName))
+	centriolePos = readPixelPosition(fileName)#np.array(np.load(fileName))
 	_centriolPosition= np.empty((alllabelsD.shape[0],2))
 	_centriolPosition.fill(np.nan)
 	_centriolPosition[np.array([np.argwhere(id == i)[0][0] for i in centriolePos[:,0]]),:]=  centriolePos[:,1:3]
