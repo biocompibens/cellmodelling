@@ -11,6 +11,7 @@ from PIL import Image
 from .drawing import image_synthesis
 from .utils import fit_loc_angle, paramsAsMatrices, dG
 
+
 _labels = None
 _idxnn = None
 _I = None
@@ -21,14 +22,17 @@ _params_orig = None
 _S_1 = None
 
 def _min_dist_5p(labi):
+	try : 
+		idx = np.where(_labels==labi)[0]
+		idist = []
 
-	idx = np.where(_labels==labi)[0]
-	idist = []
-
-	for j in _idxnn[labi]: #take each of the 20 closest centers of the label = labi
-		idist.append(cdist(_I[idx],_params[j,:2][np.newaxis,:],metric='mahalanobis', VI=_S_1[j])) #VI : ndarray The inverse of the covariance matrix for Mahalanobis
-	idist = np.hstack(idist)
-
+		for j in _idxnn[labi]: #take each of the 20 closest centers of the label = labi
+			idist.append(cdist(_I[idx],_params[j,:2][np.newaxis,:],metric='mahalanobis', VI=_S_1[j])) #VI : ndarray The inverse of the covariance matrix for Mahalanobis
+		idist = np.hstack(idist)
+	except TypeError as e:
+		print '%s: %s %s' % (e, labi, _labels)
+	if len(idist) == 0 :
+		return idx, _idxnn[labi][np.argmin(idist,axis=1)], np.nan 
 	return idx, _idxnn[labi][np.argmin(idist,axis=1)], np.min(idist,axis=0) 
 
 def _mean_5p(labi):
@@ -140,19 +144,20 @@ def Lloyd(I, labels, params, params_orig, border, im_labels_orig, im_values_orig
 		_labels = labels
 		_idxnn = idxnn
 		parameters = list(range(C.shape[0]))
+
 		if n_jobs > 1:
 			pool = Pool(n_jobs)
 			if _5p == '':
-				results = list(pool.imap(_min_dist_5p, parameters))#_5p
+				results = list(pool.imap(_min_dist_5p, parameters))
 			else : 
 				results = list(pool.imap(_min_dist, parameters))
 			pool.close()
 			pool.join()
 		else:
 			if _5p == '':
-				results = list(map(_min_dist_5p, parameters))		
+				results = list(map(_min_dist_5p, parameters))
 			else : 
-				results = list(map(_min_dist, parameters))	
+				results = list(map(_min_dist, parameters))
 		_idxnn = None
 		
 		newlabels=np.zeros(labels.shape, dtype=int)

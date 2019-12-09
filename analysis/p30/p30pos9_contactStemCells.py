@@ -48,7 +48,7 @@ for eachSynthetic in xrange(len(simulation)):
 	labels = np.unique(imgPattern)
 	imC = label2Contours(imgPattern)
 
-	elif 1 : 
+	if 1 : 
 		classFileName = './dataExamples/ependymaP30/P30_424_9_cells_features.csv'
 		fc = open(classFileName,'r')
 		lines = fc.readlines()
@@ -58,12 +58,12 @@ for eachSynthetic in xrange(len(simulation)):
 		imCluster= np.zeros(imC.shape,np.float16)
 		for iline in xrange(1,len(lines)):
 			lines[iline]=lines[iline].split(',')
-			if lines[iline][2]=='stem':
+			if lines[iline][2][:-1]=='stem':
 				yx = np.argwhere(imgPattern==int(lines[iline][1]))
 				listeCelluleSouche.append(int(lines[iline][1]))
 				imCluster[yx[:,0],yx[:,1]]=0.5
 		imCluster[imC==1]=1
-		Image.fromarray(imCluster.astype(np.float)).save(outputRep+'reconstructionClass.tif')
+		Image.fromarray(imCluster.astype(np.float)).save(outputRep+'/reconstructionClass.tif')
 
 	ragL = skimage.future.graph.rag_boundary(imgPattern, imC)
 	keysRag= np.array(ragL.edges.keys())
@@ -93,9 +93,8 @@ for eachShuf in xrange(len(shuffleTissues)):
 				yx = np.argwhere(imgPattern==lab)
 				imCluster[yx[:,0],yx[:,1]]=0.5
 		imCluster[imC==1]=1
-		Image.fromarray(imCluster.astype(np.float)).save(outputRep+'shuff'+shuffleTissues[eachShuf][shuffleTissues[eachShuf].rfind('/')+1:shuffleTissues[eachShuf].rfind('.')]+'Class.tif')
+		Image.fromarray(imCluster.astype(np.float)).save(outputRep+'/shuff'+shuffleTissues[eachShuf][shuffleTissues[eachShuf].rfind('/')+1:shuffleTissues[eachShuf].rfind('.')]+'Class.tif')
 
-	print "nb label : "+str(len(labels))+" min label : "+str(labels[0]) + " nb de small : " +str(len(listeCelluleSouche))
 
 	ragL = skimage.future.graph.rag_boundary(imgPattern, imC)
 	keysRag= np.array(ragL.edges.keys())
@@ -103,15 +102,15 @@ for eachShuf in xrange(len(shuffleTissues)):
 	nbContactUnshuf = np.isin(np.argwhere(np.isin(keysRag[:,0],positifCells)),np.argwhere(np.isin(keysRag[:,1],positifCells))).sum()
 	distriContactShuffled.append(nbContactUnshuf)
 
-np.save( outputRep+'nbContactShuffle_stemCells',distriContactShuffled) 
+np.save( outputRep+'/nbContactShuffle_stemCells',distriContactShuffled) 
 
 
 plt.clf()
 fig = plt.figure(figsize = [15,10])
-plt.hist(distriContactShuffled, color =couleurShuffle, histtype='step')
+plt.hist(distriContactShuffled, color =couleurShuffle, histtype='step',label = 'random SET')
 plt.xlabel('number of contact between two stem cells')
 plt.ylabel('Image quantity')
-plt.vlines(syntheticContacts[0],0,100, color = (0,0,0), linestyles = 'solid', label = simulation[0][simulation[0].rfind('/')+1:simulation[0].rfind('.')],lw= 3)
+plt.vlines(syntheticContacts[0],0,100, color = (0,0,0), linestyles = 'solid', label = 'reconstruction by SET',lw= 3)
 plt.legend()
 
 lenShuff = float(len(distriContactShuffled))
@@ -127,7 +126,7 @@ for eachCase in xrange(1):
 
 plt.ylim(ymax= lenShuff)
 
-plt.savefig(outputRep+'/nbContactObsvsShuf') 
+plt.savefig(outputRep+'/nbContactObsvsShuf.pdf') 
 plt.close()
 
 
