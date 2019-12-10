@@ -58,7 +58,7 @@ def readOutputSimFile(fileName):
 def readClassOfSubpop(filename):
 	extension = filename[filename.rfind('.'):]	
 	if 	extension == '.npy':
-		cellClass = np.array(np.load(fileName)) 
+		cellClass = np.array(np.load(filename)) 
 	elif extension == '.csv':
 		f = open(filename,'r')
 		data = f.readlines()
