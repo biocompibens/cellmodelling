@@ -16,12 +16,12 @@ import skimage.future
 import scipy.ndimage
 import sys
 import scipy.stats as st
-
+from IPython import embed
 
 shufflePositionFiles = glob.glob('./dataExamples/ependymaE18/allSimuOutput/[0-9]*_centriolfinalposition.tsv')
-unshuffleFile = glob.glob('./dataExamples/ependymaE18/allSimuOutput/unshuffled_centriolfinalposition.tsv')
+unshuffleFile = glob.glob('./dataExamples/ependymaE18/unshuffled_centriolfinalposition.tsv')
 shuffleLabelImg = glob.glob('./dataExamples/ependymaE18/allSimuOutput/[0-9]*.tiff')
-unshuffleLabelImg = glob.glob('./dataExamples/ependymaE18/allSimuOutput/unshuffled.tiff')
+unshuffleLabelImg = glob.glob('./dataExamples/ependymaE18/unshuffled.tiff')
 
 def label2Contours(ImgL1):
 
@@ -49,7 +49,7 @@ def analyseOneOfTheShuffleImage(indx,imageFileName,data,return_dict) :
 
 			imC = label2Contours(img)
 
-			ragShuff = skimage.future.graph.rag_boundary(img, imC)
+			ragShuff = skimage.future.graph.rag_boundary(img.astype(np.int64), imC.astype(np.int))
 			keysRag= np.array(ragShuff.edges.keys())
 
 			boundCells = np.unique(np.concatenate([np.unique(img[:,0]),np.unique(img[:,-1]),np.unique(img[-1,:]),np.unique(img[0,:])]))
@@ -129,7 +129,7 @@ reso = [0.0901435,0.0901435]
 
 #shuf analysis
 nbCPU =  1
-
+#embed()
 manager = multiprocessing.Manager()
 return_dict = manager.dict()
 iImg = 0
@@ -182,7 +182,7 @@ f.close()
 
 imC = label2Contours(img)
 
-ragShuff = skimage.future.graph.rag_boundary(img, imC)
+ragShuff = skimage.future.graph.rag_boundary(img.astype(np.int64), imC.astype(np.int))
 keysRag= np.array(ragShuff.edges.keys())
 
 boundCells = np.unique(np.concatenate([np.unique(img[:,0]),np.unique(img[:,-1]),np.unique(img[-1,:]),np.unique(img[0,:])]))

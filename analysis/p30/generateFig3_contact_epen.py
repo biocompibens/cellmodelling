@@ -3,8 +3,11 @@
 ## previous step before running this code : 
 ## 1) need to generate random SET and the reconstruction before : with 
 ## python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/allSimuOutput -s 1000
+### and 
+### python ./SET/model.py -l ./dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif -o ./dataExamples/ependymaP30/reconstruction
 ## 2) need to analyze the random set, see p30pos9_contactStemCells.py
-
+import matplotlib as mpl
+mpl.use('Agg')
 from random import shuffle,sample
 from skimage.measure import label, regionprops
 import random
@@ -15,6 +18,7 @@ import scipy.ndimage
 import skimage.future.graph
 from scipy.spatial.distance import cdist
 from PIL import ImageFilter
+import os,sys
 
 ### needed functions
 
@@ -94,7 +98,7 @@ def shuffleLabel(FileName,listeCelluleSouche) :
 
 ### grid
 def gridShuffling(imgSimuFileName,listeCelluleSouche):
-	gridImageFileName = '/users/biocomp/laruelle/coupling/Syn.png'
+	gridImageFileName = './dataExamples/ependymaP30/Syn.png'
 
 	gridImageFile = Image.open(gridImageFileName)
 	imgGrid = np.array(gridImageFile)[:,230:1520,0]
@@ -206,11 +210,11 @@ def calculPvalue(obs,shuffleDistri,valuesHistoBins, binLimits, name):
 
 
 ##################### script
-outputRep ='./dataExamples/ependymaP30/'
+outputRep ='./dataExamples/ependymaP30/nbContactAnalysis/'
 
 inputRep ='./dataExamples/ependymaP30/'
 
-imgSegFileName = './dataExamples/ependymaP30/Fused_position9_P30_IAP_LAPP_HC.tif'
+imgSegFileName = './dataExamples/ependymaP30/Fused_position9_P30_segmentation.tif'
 
 imgSimuFileName = './dataExamples/ependymaP30/reconstruction/unshuffled.tiff'
 
@@ -227,7 +231,7 @@ fc.close()
 listeCelluleSouche=[]
 for iline in xrange(1,len(lines)):
 	lines[iline]=lines[iline].split(',')
-	if lines[iline][2]=='stem':
+	if lines[iline][2][:-1]=='stem':
 		listeCelluleSouche.append(int(lines[iline][1]))
 
 ### img cell type on seg 
@@ -261,7 +265,10 @@ distriGrid_nbContactShuffle_SyntheticRand = distriGrid_nbContactShuffle_Syntheti
 distriGrid_nbContactShuffle_SyntheticUnClust = distriGrid_nbContactShuffle_SyntheticRand
 distriGrid_nbContactShuffle_SyntheticClust = distriGrid_nbContactShuffle_SyntheticRand
 
-nbContactShuffle = np.load(inputRep +'/nbContactShuffle_stemCells.npy')
+if not(os.path.isfile(inputRep +'nbContactAnalysis/nbContactShuffle_stemCells.npy')):
+	print('you must have compute the analysis (p30pos9_contactStemCells.py) first \n end ')
+	sys.exit(0)
+nbContactShuffle = np.load(inputRep +'nbContactAnalysis/nbContactShuffle_stemCells.npy')
 
 nbContactSim_ObsSeg = extractObservedNumberOfContact(imgSegFileName,listeCelluleSouche) 
 nbContactSim_ObsSim = extractObservedNumberOfContact(imgSimuFileName,listeCelluleSouche) 

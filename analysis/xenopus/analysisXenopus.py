@@ -1,8 +1,8 @@
 ## code to analyze cell organization of the xenopus mucociliary epidermis
 ## need to have generate a random SET before with : 
-##python ./CellTissueModeling/model.py -l ./dataExamples/xenopus_St33/20x-st33-ctrl-3_SME_Projection_CH1_refCH2_numCH2_UCH0_DCH2_CF-catchment-basins_wdams.ti -o ./dataExamples/xenopus_St33/allSimuOutput_INC -s 1000  -p 8 -sp ./dataExamples/xenopus_St33/20x-st33-ctrl-3Class.npy SSC INC MCC
+## python ./SET/model.py -l ./dataExamples/xenopus_St33/20x-st33-ctrl-3_SME_Projection_CH1_refCH2_numCH2_UCH0_DCH2_CF-catchment-basins_wdams.tif -o ./dataExamples/xenopus_St33/allSimuOutput_INC -s 1000  -p 8 -sp ./dataExamples/xenopus_St33/20x-st33-ctrl-3Class.npy SSC INC MCC
 ## or 
-##python ./CellTissueModeling/model.py -l ./dataExamples/xenopus_St33/20x-st33-ctrl-3_SME_Projection_CH1_refCH2_numCH2_UCH0_DCH2_CF-catchment-basins_wdams.tif -o ./dataExamples/xenopus_St33/allSimuOutput_SSC -s 1000  -p 8 -sp ./dataExamples/xenopus_St33/20x-st33-ctrl-3Class.npy SSC 
+## python ./SET/model.py -l ./dataExamples/xenopus_St33/20x-st33-ctrl-3_SME_Projection_CH1_refCH2_numCH2_UCH0_DCH2_CF-catchment-basins_wdams.tif -o ./dataExamples/xenopus_St33/allSimuOutput_SSC -s 1000  -p 8 -sp ./dataExamples/xenopus_St33/20x-st33-ctrl-3Class.npy SSC 
 
 import glob
 from PIL import Image
