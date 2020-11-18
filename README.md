@@ -87,5 +87,5 @@ python ./SET/model.py  -l ./dataExamples/ependymaE18/E18_24_series51channel2WFGM
 
 ## Reference: 
 
-
+Laruelle, E., Spassky, N. & Genovesio, A. Unraveling spatial cellular pattern by computational tissue shuffling. Commun Biol 3, 605 (2020). https://doi.org/10.1038/s42003-020-01323-3
 
