@@ -1,4 +1,3 @@
-
 import matplotlib
 matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
@@ -7,10 +6,9 @@ import numpy as np
 import argparse
 import shutil
 import os
-import cv2
+#import cv2
 import sys
 
-from tqdm import tqdm
 from scipy.spatial.distance import cdist
 from synthesis.warping import warp
 from PIL import Image
@@ -21,8 +19,7 @@ from synthesis.profiling import Profiles
 from synthesis.modeling import Lloyd
 from synthesis.wrapingPix import points_synthesis
 
-
-
+from dmSET.distanceMap_SET import dmSET
 
 ##########
 #import warnings
@@ -31,6 +28,7 @@ from synthesis.wrapingPix import points_synthesis
 ##########
 
 def readOutputSimFile(fileName):
+
 	f = open(fileName)
 	data = f.readlines()
 	f.close()
@@ -38,7 +36,7 @@ def readOutputSimFile(fileName):
 	shuf = []
 	out = []
 	flag = 0
-	for line in range(len(data)):
+	for line in range(1,len(data)):
 		l = data[line].split('\t')
 		if l[0] == 'id_f' and line!=0 :
 			flag = 2
@@ -53,29 +51,34 @@ def readOutputSimFile(fileName):
 	init = np.array(init)
 	out = np.array(out)
 	shuf = np.array(shuf)
-	return init[1:,0].astype(int),init[1:,1].astype(float),init[1:,2].astype(float),init[1:,3].astype(float),init[1:,4].astype(float),init[1:,5].astype(float),init[1:,6].astype(float),init[1:,7].astype(float),init[1:,8].astype(float),shuf[1:,0].astype(int),shuf[1:,1].astype(float),shuf[1:,2].astype(float),shuf[1:,3].astype(float),out[1:,0].astype(int),out[1:,1].astype(float),out[1:,2].astype(float),out[1:,3].astype(float)
+	return init[:,0].astype(int),init[:,1].astype(float),init[:,2].astype(float),init[:,3].astype(float),init[:,4].astype(float),init[:,5].astype(float),init[:,6].astype(float),init[:,7].astype(float),init[:,8].astype(float), shuf[1:,0].astype(int),shuf[1:,1].astype(float),shuf[1:,2].astype(float),shuf[1:,3].astype(float), out[1:,0].astype(int),out[1:,1].astype(float),out[1:,2].astype(float),out[1:,3].astype(float)
 
 def readClassOfSubpop(filename):
-	extension = filename[filename.rfind('.'):]	
+	extension = filename[filename.rfind('.'):]
+	cellClass = []
+	labs = []
 	if 	extension == '.npy':
-		cellClass = np.array(np.load(filename)) 
+		cellClass = np.array(np.load(filename))
+		labs = []
 	elif extension == '.csv':
 		f = open(filename,'r')
 		data = f.readlines()
 		f.close()
-		for iLine in xrange(len(data)):
+		for iLine in xrange(1,len(data)):
 			data[iLine] = data[iLine].split(',')
 			data[iLine] = [int(data[iLine][0]),data[iLine][1][:-1]]
-		cellClass = np.array(data)
+			cellClass.append(data[iLine][1][:-1])
+			labs.append(data[iLine][0])
 	elif extension == '.tsv':
 		f = open(filename,'r')
 		data = f.readlines()
 		f.close()
-		for iLine in xrange(len(data)):
+		for iLine in xrange(1,len(data)):
 			data[iLine] = data[iLine].split('\t')
 			data[iLine] = [int(data[iLine][0]),data[iLine][1][:-1]]
-		cellClass = np.array(data)
-	return cellClass
+			cellClass.append(data[iLine][1])
+			labs.append(data[iLine][0])
+	return np.array(labs), np.array(cellClass)
 
 			
 
@@ -86,13 +89,15 @@ if __name__ == "__main__":
 	parser.add_argument("-l", "--celllabelfile", type=str, help="Cell label file\n\n")
 	parser.add_argument("-o", "--outPath", type=str, help="OutPath name\n\n")
 	parser.add_argument("-n", "--njobs", type=int, default=1, help="Number of parallel jobs\n\n")
-	parser.add_argument("-s", "--shuffle", help="number of shuffled images - shuffle cells\n\n")
+	parser.add_argument("-s", "--shuffle",  nargs='?',type=int, const=1, help="number of shuffled images - shuffle cells\n\n")
 	parser.add_argument("-d", "--dirmovie", help="Save process movie in the specified directory\n\n")
 	parser.add_argument("-sp", "--spop", nargs='*', help="shuffle one population- class file- class to shuffle\n\n")
-	parser.add_argument("-p", "--parameters", type=str, default='',help="number of used parameters (5(ellipse),6(p-only),7(a-only),8(all))\n\n")
+	parser.add_argument("-p", "--parameters", type=str, default='',choices = [5,6,7,8,'ellipse','p-only','a-only','all','dm','dmSET'] ,help="number of used parameters (5(ellipse),6(p-only),7(a-only),8(all),dmSET)\n\n")
 	parser.add_argument("-wp", "--warpingPoint", type=str, help="point file\n\n")
 	parser.add_argument("-r", "--redo",  type=str,help="redo a simulation from parameters\n\n")
 	parser.add_argument("-it", "--iterationNumber",  type=int,help="number of iterations\n\n")
+	parser.add_argument("-gpu", "--gpu", nargs='?',type=int, const = 0, default=None, help="run dmSET on a gpu\n\n")
+
 
 
 	if len(sys.argv[1:])==0:
@@ -112,6 +117,7 @@ if __name__ == "__main__":
 	pointFileName = options.warpingPoint
 	redoFile = options.redo
 	_interNumber = options.iterationNumber
+	gpu = options.gpu
 
 	if _interNumber== None:
 		_interNumber = 80
@@ -130,31 +136,55 @@ if __name__ == "__main__":
 		if len(im_values_orig.shape)!=3 :
 			im_values_orig = np.concatenate(im_values_orig,np.zeros((im_labels_orig.shape[0],im_labels_orig.shape[1],3)),axis=2)
 
-
-	profiles = Profiles.from_image(im_values_orig, im_labels_orig, include_border=True , n_jobs=n_jobs,_p = _paramShape) #, n_jobs=70)#
-	
 	height, width = im_labels_orig.shape[:2]
 	
 	if not (dirmovie is None):
 		shutil.rmtree(dirmovie, ignore_errors=True)		
 		os.makedirs(dirmovie)
-	
 
-	id =  np.array(profiles.df.id, dtype=int)
-	rid = np.zeros(np.max(id) + 1, dtype=int)
-	rid[id] = np.arange(id.shape[0]) #reverse ids
-
-	border =  np.array(profiles.df.border, dtype=bool)
-	
-	params_orig = np.array(profiles.df.loc[:,['x', 'y', 'theta', 'l1', 'l2', 'a1', 'a2', 'p']], dtype='float64')
-	params = np.array(profiles.df.loc[:,['x', 'y', 'theta']], dtype='float64')
+	nbSimu = 1
 	if shuffle : 
 		shuffle = int(shuffle)
+		nbSimu = shuffle
 
 	if  not(os.path.exists(outPath)): 
 		os.makedirs(outPath)
 
-	for iSimu in range(max([1,shuffle])) :
+	if _paramShape == 'dmSET' or _paramShape == 'dm':
+		if gpu==None and n_jobs >1 : 
+			os.environ["OMP_NUM_THREADS"] = str(n_jobs)
+		dmSET(labelfile, outPath, nbSimu, shuffle,_interNumber, gpu,redoFile, shufpopInfo, dirmovie, pointFileName, n_jobs = n_jobs)
+		sys.exit(0)
+	if gpu!=None:
+		print('no gpu option for the parametric SET')
+	if redoFile :
+		id,_,_,_,l1,l2,a1,a2,p,_,Cx,Cy,theta,_,_,_,_ = readOutputSimFile(redoFile)
+		params = np.array([Cx,Cy,theta]).T
+		params_orig = np.array([Cx,Cy,theta,l1,l2,a1,a2,p]).T
+		border = np.array([False]*len(params))
+		#params[:,(0,1)] = np.array(C).T
+		rid = np.zeros(np.max(id) + 1, dtype=int)
+		rid[id] = np.arange(id.shape[0]) #reverse ids
+		if shuffle :
+			print('-s and -r options are not compatible')
+			print('end')
+			sys.exit(0)
+
+	else : 
+
+		profiles = Profiles.from_image(im_values_orig, im_labels_orig, include_border=True , n_jobs=n_jobs,_p = _paramShape) #, n_jobs=70)#
+		id =  np.array(profiles.df.id, dtype=int)
+		rid = np.zeros(np.max(id) + 1, dtype=int)
+		rid[id] = np.arange(id.shape[0]) #reverse ids
+
+		border =  np.array(profiles.df.border, dtype=bool)
+
+		params_orig = np.array(profiles.df.loc[:,['x', 'y', 'theta', 'l1', 'l2', 'a1', 'a2', 'p']], dtype='float64')
+		params = np.array(profiles.df.loc[:,['x', 'y', 'theta']], dtype='float64')
+
+
+
+	for iSimu in range(nbSimu) :
 		if shuffle:
 			outfile = outPath +("/%04d"%iSimu)+".tiff"
 			fOutfile = outPath +("/%04d"%iSimu)+'sLCSTable.tsv'
@@ -164,70 +194,80 @@ if __name__ == "__main__":
 		print([outfile,fOutfile])
 
 		if redoFile :
-			id,_,_,_,l1,l2,a1,a2,p,_,Cx,Cy,theta,_,_,_,_ = readOutputSimFile(redoFile)
-			C = [Cx,Cy]
-			params[:,(0,1)] = np.array(C).T
-			fOutfile = fOutfile[:-4]+'_re.tsv'
+			fOutfile = fOutfile[:-4]+'_re.csv'
+
 
 		C = params[:,(0,1)]
 		angles = params[:,2]
 
 		I = np.array(list(itertools.product(list(range(height)),list(range(width)))))
 
-
-		labels = np.argmin(cdist(I, C), axis=1) #Voronoi, range 0..n
-	
-		if shufpopInfo!= None :
-			labelIndx = np.unique(im_labels_orig)
-			cellClass = readClassOfSubpop(shufpopInfo[0])
-			gobletSimuLabels=[]
-			for popToshuffle in range(1,len(shufpopInfo)):
-				gobletSimuLabels.append( np.squeeze(labelIndx[np.argwhere(cellClass==str(shufpopInfo[popToshuffle]))]) )
-			gobletSimuLabels = np.concatenate(gobletSimuLabels)
-			boolCelluleSouche = [  ilabel in gobletSimuLabels for ilabel in labelIndx]
-			for eachC in range(len(C)): #range(1,len(C)) --> pourquoi 1 ?? je le faisais pas pour ependyme 
-				if boolCelluleSouche[eachC]==1 and not(border[eachC]) :
-					C[eachC,:] = [np.random.randint(width+1),np.random.randint(height+1)]
-			params[:,(0,1)] = C
-
-
 		# file to extract shape parameters information
-
 		simFeaturesFile = open(fOutfile,'w')
 		simFeaturesFile.write('id\tCx\tCy\ttheta\tl1\tl2\ta1\ta2\tp\n')
 		for ilabel in range(len(id)):
 			simFeaturesFile.write(str(id[ilabel]) + '\t' +str(C[ilabel][0]) +'\t' +str(C[ilabel][1])+'\t'+ str(params_orig[ilabel][2]) +'\t' +str(params_orig[ilabel][3])+'\t'+str(params_orig[ilabel][4]) +'\t' +str(params_orig[ilabel][5])+'\t'+str(params_orig[ilabel][6])+'\t'+str(params_orig[ilabel][7])+'\n')
 		simFeaturesFile.close()
 
+		labels = np.argmin(cdist(I, C), axis=1) #Voronoi, range 0..n
 
-		labels = np.argmin(cdist(I, C), axis=1)
 		#SHUFFLE CELLS: random sample within non border cells (+random angles)
-		if shuffle:
-			nbidx = np.where(~np.array(border))[0]
-			Inotborder = I[~np.array(border)[labels]]
-			C[nbidx] = Inotborder[np.random.choice(np.arange(Inotborder.shape[0]), nbidx.shape[0], replace=False)]
-			angles[nbidx] = np.random.uniform(-np.pi, np.pi, nbidx.shape[0])
-			# store back into params
-			params[:,(0,1)] = C
-			params[:,2] = angles
-		
-			labels[~np.array(border)[labels]] = -1
-			labels_reshape = labels.reshape((height, width))
-			nonborder_idx = np.where(labels_reshape == -1)
+		if shuffle :
+			if 0 : #stem cluster relocalisation
+				#
+				idxB = np.where(~np.array(border))[0]
+				Inotborder = I[~np.array(border)[labels]]
+				#outputFileName = '/projects/cellmodelling/Elise/enteroid/LI_Ctrl07Crop/vTest_CPython'
+				clustersData = np.load('/projects/cellmodelling/Elise/P30_DM/stemClusters.npy',allow_pickle=True)
+				for eachClust in range(len(clustersData)):
+					cellToShuf = clustersData[eachClust][0]
+					nbidx = np.where(np.isin(id,cellToShuf))[0]
+					posClust = np.array(Inotborder[np.random.randint(Inotborder.shape[0])]).astype(np.float64)
+					C[nbidx] = posClust
+					#rotangle[nbidx] = np.random.uniform(-np.pi, np.pi, nbidx.shape[0])
+			else :
+				
+				if shufpopInfo!= None :
+					labelIndx = np.unique(im_labels_orig)
+					labelClass,cellClass = readClassOfSubpop(shufpopInfo[0])
+					gobletSimuLabels=[]
+					for popToshuffle in range(1,len(shufpopInfo)):
+						gobletSimuLabels.append( np.squeeze(labelClass[np.argwhere(cellClass==str(shufpopInfo[popToshuffle]))]) )
+					gobletSimuLabels = np.concatenate(gobletSimuLabels)
+					boolCelluleSouche = [  ilabel in gobletSimuLabels for ilabel in labelIndx]
+					nbidx = np.where(~np.array(border) & boolCelluleSouche)[0]
+				else :
+					nbidx = np.where(~np.array(border))[0]
+				
+				Inotborder = I[~np.array(border)[labels]]
 
-			labels_reshape[nonborder_idx] = nbidx[np.argmin(cdist(np.array(nonborder_idx).T, C[nbidx]), axis=1)]
-			labels = labels_reshape.reshape(width*height)
+				C[nbidx] = Inotborder[np.random.choice(np.arange(Inotborder.shape[0]), nbidx.shape[0], replace=False)]
+				angles[nbidx] = np.random.uniform(-np.pi, np.pi, nbidx.shape[0])
+			
+				# store back into params
+				params[:,(0,1)] = C
+				params[:,2] = angles
+		
+				labels[~np.array(border)[labels]] = -1
+				labels_reshape = labels.reshape((height, width))
+				nonborder_idx = np.where(labels_reshape == -1)
+
+				labels_reshape[nonborder_idx] = nbidx[np.argmin(cdist(np.array(nonborder_idx).T, C[nbidx]), axis=1)]
+				labels = labels_reshape.reshape(width*height)
 			
 		simFeaturesFile = open(fOutfile,'a')
 		simFeaturesFile.write('id_s\tCx_s\tCy_s\ttheta_s\n')
-		for ilabel in range(len(id)): #pas sure que ce soit dans le bon ordre
+		for ilabel in range(len(id)): 
 			simFeaturesFile.write(str(id[ilabel]) + '\t' +str(C[ilabel][0]) +'\t' +str(C[ilabel][1])+'\t'+ str(params[ilabel][2]) +'\n')
 		simFeaturesFile.close()
 
 
 		im_labels_orig_sid = rid[im_labels_orig] #converting original labels to 0..n
-	
-		paramsOut, labels = Lloyd(I, labels, params, params_orig, border, im_labels_orig_sid, im_values_orig, n_jobs=n_jobs, max_iter=_interNumber, dir=dirmovie, pShape =_paramShape)
+		try:
+			paramsOut, labels = Lloyd(I, labels, params, params_orig, border, im_labels_orig_sid, im_values_orig, n_jobs=n_jobs, max_iter=_interNumber, dir=dirmovie, pShape =_paramShape)
+		except Exception:
+			print('configuration not resolved for %s'%outfile)
+			continue
 
 		if pointFileName :
 
