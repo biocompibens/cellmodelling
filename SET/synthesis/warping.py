@@ -77,11 +77,15 @@ def compute_warp(imS, yxmaskS, yxmaskD, yxborderS, yxborderD, rotangle=0):
 			xf = np.floor(x).astype(int)
 			yf[yf >= imS.shape[0]-1] = imS.shape[0] - 1
 			xf[xf >= imS.shape[1]-1] = imS.shape[1] - 1
+			yf[yf < 0] = 0
+			xf[xf < 0] = 0
 			
 			xf_1 = xf.copy()+1
 			xf_1[xf_1 >= imS.shape[1]-1] = imS.shape[1] - 1
+			xf_1[xf_1 < 0] = 0
 			yf_1 = yf.copy()+1
 			yf_1[yf_1 >= imS.shape[0]-1] = imS.shape[0] - 1
+			yf_1[yf_1 < 0] = 0
 			
 			wy = y-yf
 			wx = x-xf
