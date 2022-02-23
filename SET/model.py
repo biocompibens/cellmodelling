@@ -92,7 +92,7 @@ if __name__ == "__main__":
 	parser.add_argument("-s", "--shuffle",  nargs='?',type=int, const=1, help="number of shuffled images - shuffle cells\n\n")
 	parser.add_argument("-d", "--dirmovie", help="Save process movie in the specified directory\n\n")
 	parser.add_argument("-sp", "--spop", nargs='*', help="shuffle one population- class file- class to shuffle\n\n")
-	parser.add_argument("-p", "--parameters", type=str, default='',choices = [5,6,7,8,'ellipse','p-only','a-only','all','dm','dmSET'] ,help="number of used parameters (5(ellipse),6(p-only),7(a-only),8(all),dmSET)\n\n")
+	parser.add_argument("-p", "--parameters", type=str, choices = ['5','6','7','8','ellipse','p-only','a-only','all','dm','dmSET'] ,help="number of used parameters (5(ellipse),6(p-only),7(a-only),8(all),dmSET)\n\n")
 	parser.add_argument("-wp", "--warpingPoint", type=str, help="point file\n\n")
 	parser.add_argument("-r", "--redo",  type=str,help="redo a simulation from parameters\n\n")
 	parser.add_argument("-it", "--iterationNumber",  type=int,help="number of iterations\n\n")
