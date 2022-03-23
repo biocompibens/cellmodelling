@@ -413,7 +413,7 @@ def dmSET(segFileName, maintOutputDirName, nbSimu = 1 , shuffle= None ,_interNum
 		medAxis = newSke
 		if dirmovie:
 			Image.fromarray(newSke).save(outputDirName + '/rawSke.tif') 
-			Image.fromarray(segImg).save(outputDirName + '/segImg.tif') 
+			Image.fromarray(segImg.astype(np.int16)).save(outputDirName + '/segImg.tif') 
 		cycle = 0
 		C = np.concatenate(C).reshape((C.shape[0],2)).astype(np.float64)
 		rotangle = np.array(list(rotangle_init), dtype = np.float64)
