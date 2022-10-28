@@ -100,9 +100,9 @@ python ./SET/model.py  -l ./dataExamples/ependymaE18/E18_24_series51channel2WFGM
 * CPU version
 before any simulation, execute the following commands for compiling code :
 ```
-cd SET
+cd SET/dmSET
 cc -march=native -Ofast -fPIC --shared -fopenmp -o ./dmSET/dmSET.so ./dmSET/dmSET.c
-cd ..
+cd ../..
 ```
 
 To generate the reconstruction of the P30 ependymal tissue : 
@@ -117,9 +117,9 @@ python ./SET/model.py  -l ./dataExamples/ependymaE18/E18_24_series51channel2WFGM
 * GPU version 
 before any simulation, execute the following commands for compiling code :
 ```
-cd SET
+cd SET/dmSET
 nvcc -O3 --compiler-options '-fPIC' --shared -o ./gpudmSET.so ./dmSET.cu
-cd ..
+cd ../..
 ```
 
 To generate the reconstruction of the P30 ependymal tissue :
