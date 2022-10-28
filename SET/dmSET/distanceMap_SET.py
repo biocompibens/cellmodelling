@@ -167,6 +167,33 @@ def imageExtractCellFeatures(parameters,n_jobs):
 ####################
 
 #########################
+def readClassOfSubpop(filename):
+	extension = filename[filename.rfind('.'):]
+	cellClass = []
+	labs = []
+	if 	extension == '.npy':
+		cellClass = np.array(np.load(filename))
+		cellClass = list(map(str, cellClass, ['utf-8']*len(cellClass)))
+		labs = []
+	elif extension == '.csv':
+		f = open(filename,'r')
+		data = f.readlines()
+		f.close()
+		for iLine in range(1,len(data)):
+			data[iLine] = data[iLine].split(',')
+			data[iLine] = [int(data[iLine][0]),data[iLine][1][:-1]]
+			cellClass.append(data[iLine][1])
+			labs.append(data[iLine][0])
+	elif extension == '.tsv':
+		f = open(filename,'r')
+		data = f.readlines()
+		f.close()
+		for iLine in range(1,len(data)):
+			data[iLine] = data[iLine].split('\t')
+			data[iLine] = [int(data[iLine][0]),data[iLine][1][:-1]]
+			cellClass.append(data[iLine][1])
+			labs.append(data[iLine][0])
+	return np.array(labs), np.array(cellClass)
 
 def readOutputSimFile(fileName):
 
@@ -293,7 +320,7 @@ def dmSET(segFileName, maintOutputDirName, nbSimu = 1 , shuffle= None ,_interNum
 			for popToshuffle in range(1,len(shufpopInfo)):
 				cellsToShuf.append( np.squeeze(labelClass[np.argwhere(cellClass==str(shufpopInfo[popToshuffle]))]) )
 			cellsToShuf = np.concatenate(cellsToShuf)
-			boolCells = [ilabel in cellsToShuf for ilabel in labelsId]
+			boolCells = [ilabel in cellsToShuf for ilabel in id]
 			nbidx = np.where(~np.array(borders) & boolCells)[0]
 
 			Inotborder = I[np.isin(LabelsInit,labelsId[nbidx])]
@@ -413,7 +440,7 @@ def dmSET(segFileName, maintOutputDirName, nbSimu = 1 , shuffle= None ,_interNum
 		medAxis = newSke
 		if dirmovie:
 			Image.fromarray(newSke).save(outputDirName + '/rawSke.tif') 
-			Image.fromarray(segImg).save(outputDirName + '/segImg.tif') 
+			Image.fromarray(segImg.astype(np.int16)).save(outputDirName + '/segImg.tif') 
 		cycle = 0
 		C = np.concatenate(C).reshape((C.shape[0],2)).astype(np.float64)
 		rotangle = np.array(list(rotangle_init), dtype = np.float64)

@@ -59,21 +59,22 @@ def readClassOfSubpop(filename):
 	labs = []
 	if 	extension == '.npy':
 		cellClass = np.array(np.load(filename))
+		cellClass = list(map(str, cellClass, ['utf-8']*len(cellClass)))
 		labs = []
 	elif extension == '.csv':
 		f = open(filename,'r')
 		data = f.readlines()
 		f.close()
-		for iLine in xrange(1,len(data)):
+		for iLine in range(1,len(data)):
 			data[iLine] = data[iLine].split(',')
 			data[iLine] = [int(data[iLine][0]),data[iLine][1][:-1]]
-			cellClass.append(data[iLine][1][:-1])
+			cellClass.append(data[iLine][1])
 			labs.append(data[iLine][0])
 	elif extension == '.tsv':
 		f = open(filename,'r')
 		data = f.readlines()
 		f.close()
-		for iLine in xrange(1,len(data)):
+		for iLine in range(1,len(data)):
 			data[iLine] = data[iLine].split('\t')
 			data[iLine] = [int(data[iLine][0]),data[iLine][1][:-1]]
 			cellClass.append(data[iLine][1])
@@ -188,6 +189,11 @@ if __name__ == "__main__":
 		if shuffle:
 			outfile = outPath +("/%04d"%iSimu)+".tiff"
 			fOutfile = outPath +("/%04d"%iSimu)+'sLCSTable.tsv'
+			tag = 0
+			while os.path.exists(fOutfile) : 
+				outfile = outPath +("/%04d"%iSimu)+'_'+str(tag) +".tiff"
+				fOutfile = outPath +("/%04d"%iSimu)+'_'+str(tag) +'sLCSTable.tsv'
+				tag += 1
 		else : 
 			outfile = outPath +"/unshuffled.tiff"
 			fOutfile = outPath +"/unshuffled"+'uLCSTable.tsv'
@@ -213,47 +219,37 @@ if __name__ == "__main__":
 
 		#SHUFFLE CELLS: random sample within non border cells (+random angles)
 		if shuffle :
-			if 0 : #stem cluster relocalisation
-				#
-				idxB = np.where(~np.array(border))[0]
-				Inotborder = I[~np.array(border)[labels]]
-				#outputFileName = '/projects/cellmodelling/Elise/enteroid/LI_Ctrl07Crop/vTest_CPython'
-				clustersData = np.load('/projects/cellmodelling/Elise/P30_DM/stemClusters.npy',allow_pickle=True)
-				for eachClust in range(len(clustersData)):
-					cellToShuf = clustersData[eachClust][0]
-					nbidx = np.where(np.isin(id,cellToShuf))[0]
-					posClust = np.array(Inotborder[np.random.randint(Inotborder.shape[0])]).astype(np.float64)
-					C[nbidx] = posClust
-					#rotangle[nbidx] = np.random.uniform(-np.pi, np.pi, nbidx.shape[0])
+				
+			if shufpopInfo!= None :
+				labelClass,cellClass = readClassOfSubpop(shufpopInfo[0])
+				if len(labelClass) == 0 and len(cellClass)!=0  and len(cellClass)== len(C) :
+					labelClass = np.unique(im_labels_orig)
+				elif len(labelClass) == 0 and len(cellClass)!=0 : 
+					print('error : missing cell types !')
+				movingLabels=[]
+				for popToshuffle in range(1,len(shufpopInfo)):
+					movingLabels.append( np.squeeze(labelClass[np.argwhere(cellClass==str(shufpopInfo[popToshuffle]))]) )
+				movingLabels = np.concatenate(movingLabels)
+				movingState = [ilabel in movingLabels for ilabel in id]
+				nbidx = np.where(~np.array(border) & movingState)[0]
 			else :
-				
-				if shufpopInfo!= None :
-					labelIndx = np.unique(im_labels_orig)
-					labelClass,cellClass = readClassOfSubpop(shufpopInfo[0])
-					gobletSimuLabels=[]
-					for popToshuffle in range(1,len(shufpopInfo)):
-						gobletSimuLabels.append( np.squeeze(labelClass[np.argwhere(cellClass==str(shufpopInfo[popToshuffle]))]) )
-					gobletSimuLabels = np.concatenate(gobletSimuLabels)
-					boolCelluleSouche = [  ilabel in gobletSimuLabels for ilabel in labelIndx]
-					nbidx = np.where(~np.array(border) & boolCelluleSouche)[0]
-				else :
-					nbidx = np.where(~np.array(border))[0]
-				
-				Inotborder = I[~np.array(border)[labels]]
-
-				C[nbidx] = Inotborder[np.random.choice(np.arange(Inotborder.shape[0]), nbidx.shape[0], replace=False)]
-				angles[nbidx] = np.random.uniform(-np.pi, np.pi, nbidx.shape[0])
+				nbidx = np.where(~np.array(border))[0]
 			
-				# store back into params
-				params[:,(0,1)] = C
-				params[:,2] = angles
-		
-				labels[~np.array(border)[labels]] = -1
-				labels_reshape = labels.reshape((height, width))
-				nonborder_idx = np.where(labels_reshape == -1)
+			Inotborder = I[~np.array(border)[labels]]
 
-				labels_reshape[nonborder_idx] = nbidx[np.argmin(cdist(np.array(nonborder_idx).T, C[nbidx]), axis=1)]
-				labels = labels_reshape.reshape(width*height)
+			C[nbidx] = Inotborder[np.random.choice(np.arange(Inotborder.shape[0]), nbidx.shape[0], replace=False)]
+			angles[nbidx] = np.random.uniform(-np.pi, np.pi, nbidx.shape[0])
+		
+			# store back into params
+			params[:,(0,1)] = C
+			params[:,2] = angles
+	
+			labels[~np.array(border)[labels]] = -1
+			labels_reshape = labels.reshape((height, width))
+			nonborder_idx = np.where(labels_reshape == -1)
+
+			labels_reshape[nonborder_idx] = nbidx[np.argmin(cdist(np.array(nonborder_idx).T, C[nbidx]), axis=1)]
+			labels = labels_reshape.reshape(width*height)
 			
 		simFeaturesFile = open(fOutfile,'a')
 		simFeaturesFile.write('id_s\tCx_s\tCy_s\ttheta_s\n')

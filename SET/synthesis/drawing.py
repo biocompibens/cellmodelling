@@ -1,6 +1,6 @@
 
 import numpy as np
-import cv2
+#import cv2
 
 from multiprocessing import Pool
 from scipy.ndimage import morphological_gradient

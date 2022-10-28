@@ -30,7 +30,7 @@ def _min_dist_5p(labi):
 			idist.append(cdist(_I[idx],_params[j,:2][np.newaxis,:],metric='mahalanobis', VI=_S_1[j])) #VI : ndarray The inverse of the covariance matrix for Mahalanobis
 		idist = np.hstack(idist)
 	except TypeError as e:
-		print '%s: %s %s' % (e, labi, _labels)
+		print( '%s: %s %s' % (e, labi, _labels))
 	if len(idist) == 0 :
 		return idx, _idxnn[labi][np.argmin(idist,axis=1)], np.nan 
 	return idx, _idxnn[labi][np.argmin(idist,axis=1)], np.min(idist,axis=0) 

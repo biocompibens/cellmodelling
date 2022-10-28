@@ -4,21 +4,22 @@ import networkx as nx
 
 from multiprocessing import Pool
 from scipy.spatial.distance import cdist
-from utils import cart2pol
-from utils import convert_angle
-from utils import pol2cart
+from .utils import cart2pol
+from .utils import convert_angle
+from .utils import pol2cart
 from PIL import Image
 
-from warping import compute_warp
-import cv2
+from .warping import compute_warp, _create_sorted_contour
+#import cv2
 
 
 from scipy.ndimage import morphological_gradient
-from warping import _create_sorted_contour
 
 
 
-def _warp((sellabel, rot)):
+
+def _warp(args):
+	sellabel, rot = args
 	yxmaskD = np.argwhere(_cellsD == sellabel)
 	yxborderD = np.argwhere(_cellsborderD == sellabel)
 	yxmaskS = np.argwhere(_cellsS == sellabel)
@@ -30,8 +31,8 @@ def _warp((sellabel, rot)):
 		return None
 
 
-def _wrapingPix((sellabel, rot,xmaskS,ymaskS)):
-	
+def _wrapingPix(args):
+	sellabel, rot,xmaskS,ymaskS = args
 	if np.isnan(xmaskS):
 		return np.nan,np.nan
 	yxmaskD = np.argwhere(_cellsD == sellabel)
@@ -57,7 +58,7 @@ def readPixelPosition(filename):
 		f = open(filename,'r')
 		data = f.readlines()
 		f.close()
-		for iLine in xrange(len(data)):
+		for iLine in xrange(1,len(data)):
 			data[iLine] = data[iLine].split(',')
 			data[iLine] = [int(data[iLine][0]),float(data[iLine][1]),float(data[iLine][2])]
 		centriolePos = np.array(data)
@@ -65,7 +66,7 @@ def readPixelPosition(filename):
 		f = open(filename,'r')
 		data = f.readlines()
 		f.close()
-		for iLine in xrange(len(data)):
+		for iLine in xrange(1,len(data)):
 			data[iLine] = data[iLine].split('\t')
 			data[iLine] = [int(data[iLine][0]),float(data[iLine][1]),float(data[iLine][2])]
 		centriolePos = np.array(data)
@@ -221,7 +222,7 @@ def compute_warp_Pix(imS, yxmaskS, yxborderS, yxborderD, rotangle=0):
 			
 			yx = np.dot(W, yxAnchorD)
 			if yx.shape[0]>1:
-				print 'warning, plus d\'un centriole !? '
+				print( 'warning, plus d\'un centriole !? ')
 			y = yx[:,1]
 			x = yx[:,0]
 
@@ -230,12 +231,12 @@ def compute_warp_Pix(imS, yxmaskS, yxborderS, yxborderD, rotangle=0):
 	
 			return np.concatenate((x,y))
 	except ValueError as e: 
-		print 'warping.yp - compute_warp() - ValueError: %s' % e
+		print( 'warping.yp - compute_warp() - ValueError: %s' % e)
 		#import pdb
 		#pdb.set_trace()
 		return None
 	except IndexError as e: 
-		print 'warping.yp - compute_warp() - ValueError: %s' % e
+		print( 'warping.yp - compute_warp() - ValueError: %s' % e)
 		#_create_sorted_contour(yxborderD[::-1], center=meanD, rot=-rotangle, N=100, display=True)
 		#import pdb
 		#pdb.set_trace()
