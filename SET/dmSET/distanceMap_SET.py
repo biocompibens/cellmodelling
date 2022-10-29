@@ -125,29 +125,6 @@ def _mean(labi_,):
 			return Ci, _rotangle[labi_]
 		return Ci, alphaj
 
-def mean_(labi_,labels_,border_,C_,rotangle_,labId_):
-	yxlabi = np.argwhere(labels_==labId_[labi_])
-	if yxlabi.shape[0] <= 1 or border_[labi_]:
-		return C_[labi_].copy(), rotangle_[labi_]
-	else:
-		Ci = np.mean(yxlabi, axis=0)
-		try:
-			#yxlabi[[1,0]] = yxlabi[[0,1]]
-			yxcelli = yxlabi - Ci
-			Sj = np.dot(yxcelli.T, yxcelli) / yxcelli.shape[0]
-			lj, vj = np.linalg.eigh(Sj)
-			alphaj = np.arctan2(vj[0,1], vj[1,1])
-			
-			if(np.abs(rotangle_[labi_]-alphaj) > np.pi / 2):
-				if(alphaj<rotangle_[labi_]):
-					alphaj += np.pi
-				else:
-					alphaj -= np.pi
-			
-		except np.linalg.LinAlgError as e:
-			print('np.linalg.LinAlgError (k-means 2): %s' % e)
-			return Ci, rotangle_[labi_]
-		return Ci, alphaj
 
 def imageExtractCellFeatures(parameters,n_jobs):
 	if n_jobs > 1:
@@ -293,7 +270,7 @@ def dmSET(segFileName, maintOutputDirName, nbSimu = 1 , shuffle= None ,_interNum
 		_rotangle = rotangle_init
 		_labId = labelsId
 		parameters = range(len(labelsId))
-		C,rotangle_init = imageExtractCellFeatures(parameters, n_jobs) #np.array([mean_(labi,segImg,borders,C_init,rotangle_init,labelsId) for labi in range(len(labelsId))]).T 
+		C,rotangle_init = imageExtractCellFeatures(parameters, n_jobs)
 
 		rotangle_init = rotangle_init.astype(np.float64)
 		rotangle = np.copy(rotangle_init)
@@ -473,7 +450,7 @@ def dmSET(segFileName, maintOutputDirName, nbSimu = 1 , shuffle= None ,_interNum
 				_labels = labels
 				_C = C
 				_rotangle = rotangle
-				C,rotangle = imageExtractCellFeatures(parameters, n_jobs) #np.array([mean_(labi,labels,borders,C,rotangle,labelsId) for labi in range(len(labelsId))]).T			
+				C,rotangle = imageExtractCellFeatures(parameters, n_jobs)		
 
 				t4 = time.time()
 				print('time mean : ', t4-t3)
@@ -526,7 +503,7 @@ def dmSET(segFileName, maintOutputDirName, nbSimu = 1 , shuffle= None ,_interNum
 				_labels = labels
 				_C = C
 				_rotangle = rotangle
-				C,rotangle = imageExtractCellFeatures(parameters, n_jobs)# np.array([mean_(labi,labels,borders,C,rotangle,labelsId) for labi in range(len(labelsId))]).T
+				C,rotangle = imageExtractCellFeatures(parameters, n_jobs)
 
 				C = np.concatenate(C).reshape((C.shape[0],2)).astype(np.float64)
 				deltaC = np.sqrt(np.power(C[:,0]-oldC[:,0],2)+np.power(C[:,1]-oldC[:,1],2))
